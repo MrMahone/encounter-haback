@@ -196,7 +196,7 @@ function baueKarte(inst, nr) {
         '<span class="name"></span>' +
         '<span class="unter"></span>' +
       '</span>' +
-      '<button class="totknopf" aria-label="tot / lebt">✝</button>' +
+      '<button class="totknopf" aria-label="tot / lebt">TOT</button>' +
     '</div>' +
     '<div class="zonen">' +
       '<div class="trenner"></div>' +
@@ -219,8 +219,10 @@ function baueKarte(inst, nr) {
   };
   karten.set(inst.uid, ref);
 
-  // Beschriftung
-  q('.name').textContent = (kr.kurz || kr.name) + (nr ? ' ' + nr : '');
+  // Beschriftung. Die Laufnummer steht im Plättchen, nicht im Namen - im Namen
+  // wuerde sie als Erstes abgeschnitten, und sie ist das Wichtigste am Kasten.
+  ref.nr = nr;
+  q('.name').textContent = kr.kurz || kr.name;
   const kurzStufe = st && st.kurz ? st.kurz : '';
   q('.unter').innerHTML = (kurzStufe ? '<span class="stufe">' + esc(kurzStufe) + '</span> · ' : '') +
     'AC ' + inst.ac;
@@ -249,15 +251,23 @@ function baueKarte(inst, nr) {
     summe();
   };
 
-  faerbeTag(ref.tag, inst.tag);
+  faerbeTag(ref.tag, inst.tag, nr);
   malen(inst.uid);
   return karte;
 }
 
-function faerbeTag(el, tagId) {
+function faerbeTag(el, tagId, nr) {
   const f = FARBEN.find(x => x.id === tagId);
   el.style.background = f ? f.hex : 'transparent';
+  el.style.color = f ? (istHell(f.hex) ? '#14161a' : '#fff') : '';
   el.classList.toggle('hat', !!f);
+  el.textContent = nr ? String(nr) : '';
+}
+
+// Auf hellen Plättchen (gelb, weiß) muss die Nummer dunkel sein.
+function istHell(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) > 150;
 }
 
 /* ───────────── Eingabe ───────────── */
@@ -474,7 +484,7 @@ function setzeTag(inst, tagId) {
   inst.tag = tagId;
   speichern();
   const ref = karten.get(inst.uid);
-  if (ref) faerbeTag(ref.tag, tagId);
+  if (ref) faerbeTag(ref.tag, tagId, ref.nr);
   sheetZu();
 }
 

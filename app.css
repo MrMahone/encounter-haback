@@ -69,8 +69,10 @@ button {
 #bar .nav:active { background: var(--rand); color: var(--text); }
 #bar .nav:disabled { opacity: .25; }
 
+/* Titel waechst nur soweit er muss - die Pfeile sollen am Titel kleben,
+   nicht an den Bildschirmraendern. */
 #titel {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -79,6 +81,7 @@ button {
   border-radius: 10px;
   text-align: left;
 }
+.luecke { flex: 1 1 auto; min-width: 8px; }
 #titel:active { background: var(--karte-2); }
 #titel .nr {
   font-size: 22px;
@@ -174,12 +177,19 @@ button {
   position: relative;
   z-index: 3;
 }
+/* Plättchen = Farbe plus Laufnummer. Entspricht dem Marker auf dem Tisch:
+   „der rote Zweier". */
 .tag {
-  width: 22px; height: 22px;
+  width: 24px; height: 24px;
   flex: 0 0 auto;
   border-radius: 50%;
   border: 2px solid var(--rand-hell);
   background: transparent;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 20px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
 }
 .tag.hat { border-color: rgba(255,255,255,.55); }
 
@@ -200,17 +210,22 @@ button {
 }
 .kopf .stufe { color: var(--gelb); font-weight: 700; }
 
+/* Beschriftet statt bebildert: ein Kreuz-Symbol war neben dem ＋ der oberen
+   Tippflaeche nicht auseinanderzuhalten. */
 .totknopf {
-  width: 26px; height: 26px;
+  height: 24px;
+  padding: 0 5px;
   flex: 0 0 auto;
   border-radius: 7px;
-  font-size: 15px;
-  line-height: 1;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: .3px;
+  line-height: 24px;
   background: var(--karte-2);
   color: var(--text-2);
 }
 .totknopf:active { background: var(--rand); }
-.karte.tot .totknopf { background: var(--rot); color: #fff; opacity: 1; }
+.karte.tot .totknopf { background: var(--rot); color: #fff; }
 
 /* Tippflächen */
 .zonen {
@@ -238,11 +253,16 @@ button {
 .zone.plus:active  { background: rgba(63,174,99,.16); }
 .zone.minus:active { background: rgba(226,73,63,.16); }
 
+/* Trennlinie nur an den Raendern - durch die Zahl gezogen sah sie wie
+   durchgestrichen aus. */
 .trenner {
   position: absolute;
   left: 10px; right: 10px; top: 50%;
   height: 1px;
-  background: var(--rand);
+  background: linear-gradient(to right,
+    var(--rand-hell) 0, var(--rand-hell) 18%,
+    transparent 30%, transparent 70%,
+    var(--rand-hell) 82%, var(--rand-hell) 100%);
   z-index: 0;
 }
 
@@ -311,9 +331,10 @@ button {
 
 .notiz {
   flex: 0 0 auto;
-  padding: 4px 8px 6px;
+  height: 30px;            /* feste Hoehe: sonst schiebt eine lange Notiz den Kasten auf */
+  padding: 3px 8px 0;
   font-size: 10px;
-  line-height: 1.3;
+  line-height: 13px;
   color: var(--text-2);
   display: -webkit-box;
   -webkit-box-orient: vertical;
