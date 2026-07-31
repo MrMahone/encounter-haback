@@ -9,7 +9,7 @@ const LS_KEY = 'ln-hp-v2';
 const COMMIT_MS = 1200;   // Wartezeit nach dem letzten Tipp bis verrechnet wird
 const HOLD_MS   = 400;    // ab wann Halten in den Schnelllauf geht
 const TICK_MS   = 90;     // Takt des Schnelllaufs
-const SCROLL_PX = 14;     // ab dieser Fingerbewegung gilt es als Scrollen, nicht als Tipp
+const SCROLL_PX = 22;     // ab dieser Fingerbewegung gilt es als Scrollen, nicht als Tipp
 
 const FARBEN = [
   { id: 'rot',     hex: '#d4423a' },
@@ -425,11 +425,8 @@ function kartenMenue(inst) {
 
     if (inst.notiz || inst.spaeter) {
       const n = document.createElement('div');
-      n.className = 'zeile';
-      n.style.background = 'transparent';
-      n.innerHTML = '<small style="margin:0;font-size:13px;line-height:1.45">' +
-        (inst.spaeter ? '<b style="color:var(--gelb)">' + esc(inst.spaeter) + '</b> · ' : '') +
-        esc(inst.notiz || '') + '</small>';
+      n.className = 'merk';
+      n.innerHTML = (inst.spaeter ? '<b>' + esc(inst.spaeter) + '</b> · ' : '') + esc(inst.notiz || '');
       box.appendChild(n);
     }
 

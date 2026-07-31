@@ -52,10 +52,12 @@ Kampagnen-Repo (Stand 2026-07-31).
 Nicht per Doppelklick öffnen — `fetch` auf die JSONs braucht einen Server:
 
 ```bash
-py -m http.server 8000
+py serve.py
 ```
 
-Dann `http://localhost:8000`.
+Dann `http://localhost:8123`. (`py -m http.server` geht auch, liefert auf Windows
+aber `.js` als `text/plain` aus — dann verweigert der Browser den Service Worker und
+Offline lässt sich lokal nicht testen. `serve.py` setzt die MIME-Typen richtig.)
 
 ## Auf GitHub Pages bringen
 
