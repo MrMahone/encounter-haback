@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "titel": "Kreaturen-Katalog - Die letzte Nacht",
+    "zweck": "Nur was der HP-Zaehler braucht: Name, Stufen, AC, HP. Keine Statblocks.",
+    "quelle": "gegner/gegner.json aus dem Kampagnen-Repo",
+    "stand": "2026-07-31",
+    "hinweis": "AC und HP hier aendern = neue Kreaturen bekommen die neuen Werte. Laufende Encounter im Browser behalten ihre Werte, bis du sie zuruecksetzt."
+  },
+  "kreaturen": [
+    {
+      "ref": "himmelsschwaermer",
+      "name": "Himmelsschwärmer",
+      "kurz": "Schwärmer",
+      "stufen": [
+        { "id": "t1", "label": "T1 · Brut", "kurz": "T1", "ac": 12, "hp": 11 },
+        { "id": "t2", "label": "T2 · Genährt", "kurz": "T2", "ac": 14, "hp": 22 },
+        { "id": "t3", "label": "T3 · Vollgesogen (glüht, platzt)", "kurz": "T3", "ac": 15, "hp": 30 }
+      ]
+    },
+    {
+      "ref": "spucker",
+      "name": "Spucker",
+      "kurz": "Spucker",
+      "stufen": [
+        { "id": "t1", "label": "T1 · Klammerer", "kurz": "T1", "ac": 12, "hp": 10 },
+        { "id": "t2", "label": "T2 · Langschlund", "kurz": "T2", "ac": 14, "hp": 18 },
+        { "id": "t3", "label": "T3 · Mörser (glüht, platzt)", "kurz": "T3", "ac": 14, "hp": 24 }
+      ]
+    },
+    {
+      "ref": "krabbler",
+      "name": "Krabbler",
+      "kurz": "Krabbler",
+      "stufen": [
+        { "id": "t1", "label": "T1 · Krabbler", "kurz": "T1", "ac": 12, "hp": 13 },
+        { "id": "t2", "label": "T2 · Hakenläufer", "kurz": "T2", "ac": 14, "hp": 20 },
+        { "id": "t3", "label": "T3 · Reißer (glüht, platzt)", "kurz": "T3", "ac": 15, "hp": 26 }
+      ]
+    },
+    {
+      "ref": "kreischer",
+      "name": "Kreischer",
+      "kurz": "Kreischer",
+      "stufen": [
+        { "id": "t1", "label": "T1 · auf Augenhöhe", "kurz": "T1", "ac": 12, "hp": 5 },
+        { "id": "t2", "label": "T2 · 50 ft hoch", "kurz": "T2", "ac": 15, "hp": 5 },
+        { "id": "t3", "label": "T3 · halbe Deckung", "kurz": "T3", "ac": 14, "hp": 5 }
+      ]
+    },
+    {
+      "ref": "traeger",
+      "name": "Der Träger",
+      "kurz": "Träger",
+      "stufen": [
+        { "id": "standard", "label": "Standard (eff. 62 mit Fracht)", "kurz": "", "ac": 13, "hp": 22 }
+      ]
+    },
+    {
+      "ref": "brecher",
+      "name": "Der Brecher",
+      "kurz": "Brecher",
+      "stufen": [
+        { "id": "t1", "label": "T1 · langsam", "kurz": "T1", "ac": 13, "hp": 22 },
+        { "id": "t2", "label": "T2 · Rammstoß", "kurz": "T2", "ac": 15, "hp": 40 },
+        { "id": "t3", "label": "T3 · durch Wände (platzt)", "kurz": "T3", "ac": 16, "hp": 55 }
+      ]
+    },
+    {
+      "ref": "wartungskonstrukt",
+      "name": "Wartungskonstrukt",
+      "kurz": "Konstrukt",
+      "stufen": [
+        { "id": "standard", "label": "Der Verwaiste · Resistenz Waffen", "kurz": "", "ac": 17, "hp": 45 }
+      ]
+    },
+    {
+      "ref": "brutmutter",
+      "name": "Die Brutmutter",
+      "kurz": "Brutmutter",
+      "stufen": [
+        { "id": "leiter110", "label": "110 HP · E6 dauerte 4+ Runden", "kurz": "110", "ac": 14, "hp": 110 },
+        { "id": "leiter125", "label": "125 HP · E6 dauerte 3 Runden", "kurz": "125", "ac": 15, "hp": 125 },
+        { "id": "leiter135", "label": "135 HP · E6 dauerte ≤ 2 Runden", "kurz": "135", "ac": 16, "hp": 135 }
+      ]
+    }
+  ]
+}

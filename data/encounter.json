@@ -1,0 +1,107 @@
+{
+  "meta": {
+    "titel": "Encounter-Liste - Die letzte Nacht",
+    "zweck": "Wer steht wo auf dem Feld. Reihenfolge = Reihenfolge der Vor-/Zurueck-Knoepfe.",
+    "quelle": "prep/block-encounter.html und gegner/gegner-tierlist.md (Abschnitt 7)",
+    "stand": "2026-07-31",
+    "felder": {
+      "ref": "zeigt auf kreaturen.json -> kreaturen[].ref",
+      "stufe": "zeigt auf kreaturen[].stufen[].id",
+      "anzahl": "wie viele Kaesten angelegt werden",
+      "spaeter": "optional; Text wie 'ab Rd. 1'. Der Kasten wird gestrichelt gezeichnet, zaehlt aber normal.",
+      "notiz": "eine Zeile auf dem Kasten"
+    }
+  },
+  "encounters": [
+    {
+      "id": "E1",
+      "nr": "E1",
+      "szene": "Szene 1 · Krisensitzung",
+      "name": "Der Gang",
+      "funktion": "Tutorial · 1 Runde hart gedeckelt",
+      "gegner": [
+        { "ref": "krabbler", "stufe": "t1", "anzahl": 2, "notiz": "Sprung: DEX DC 12 → liegend" },
+        { "ref": "kreischer", "stufe": "t1", "anzahl": 1, "notiz": "Missklang 60 ft · stirbt an 1 Treffer · entkommt er, kommt er in E8 zurück" }
+      ]
+    },
+    {
+      "id": "E2",
+      "nr": "E2",
+      "szene": "Szene 2 · Die Gasse",
+      "name": "Der Hinterhalt",
+      "funktion": "Schockkampf · Überraschungsrunde · ~2,1 Runden",
+      "gegner": [
+        { "ref": "himmelsschwaermer", "stufe": "t1", "anzahl": 3, "notiz": "tief über die Dächer, lautlos" },
+        { "ref": "spucker", "stufe": "t1", "anzahl": 2, "notiz": "Fassade links / rechts" }
+      ]
+    },
+    {
+      "id": "E3",
+      "nr": "E3",
+      "szene": "Szene 3 · Der Markt",
+      "name": "Die Evakuierung",
+      "funktion": "erster echter Kampf · Debüt T2, Träger, Verhaken · ~3,3 Runden",
+      "gegner": [
+        { "ref": "himmelsschwaermer", "stufe": "t1", "anzahl": 3, "notiz": "aus dem Rauch, auf die Familie" },
+        { "ref": "krabbler", "stufe": "t2", "anzahl": 2, "notiz": "Verhaken DC 14 · hinter den Kindern her" },
+        { "ref": "traeger", "stufe": "standard", "anzahl": 1, "spaeter": "ab Rd. 1", "notiz": "über die Dächer · Sack sichtbar · stirbt er, stirbt die Fracht" },
+        { "ref": "krabbler", "stufe": "t2", "anzahl": 2, "spaeter": "Fracht", "notiz": "schlüpft 2 Runden nach dem Auftritt des Trägers" }
+      ]
+    },
+    {
+      "id": "E4",
+      "nr": "E4",
+      "szene": "Szene 4.5 · Maschinenebene",
+      "name": "Das Wartungskonstrukt",
+      "funktion": "optional · Textur-Pause · budgetneutral",
+      "gegner": [
+        { "ref": "wartungskonstrukt", "stufe": "standard", "anzahl": 1, "notiz": "Resistenz Hieb/Stich/Wucht · verzurrt statt zu töten · Rückenklappe DC 13 beendet den Kampf" }
+      ]
+    },
+    {
+      "id": "E5",
+      "nr": "E5",
+      "szene": "Szene 5 · Die Werkhalle",
+      "name": "Der Mörser",
+      "funktion": "härtester Kampf · ~4,0 Runden · Tiefpunkt des Abends",
+      "gegner": [
+        { "ref": "himmelsschwaermer", "stufe": "t2", "anzahl": 3, "notiz": "festgesaugt an den Adern, wie Zecken" },
+        { "ref": "spucker", "stufe": "t3", "anzahl": 1, "notiz": "MÖRSER · Decke, halb im Dunkeln · Ätzlobb DEX DC 14, 3W6 · glüht · platzt" },
+        { "ref": "krabbler", "stufe": "t3", "anzahl": 1, "notiz": "REISSER · rennt vorbei nach hinten · glüht · platzt" }
+      ]
+    },
+    {
+      "id": "E6",
+      "nr": "E6",
+      "szene": "Szene 6 · Ankerkammer",
+      "name": "Das Nest an der Ader",
+      "funktion": "DAS IST DIE MESSUNG für die Boss-HP · ~2,6 Runden",
+      "gegner": [
+        { "ref": "himmelsschwaermer", "stufe": "t3", "anzahl": 2, "notiz": "kopfüber an der Hauptader · Sturzangriff · glüht · platzt (10 ft)" },
+        { "ref": "spucker", "stufe": "t2", "anzahl": 1, "notiz": "Gewölbedecke · klettert nach jedem Schuss weiter" }
+      ]
+    },
+    {
+      "id": "E7",
+      "nr": "E7",
+      "szene": "Szene 6 · Ankerkammer",
+      "name": "Der Durchbruch",
+      "funktion": "zündet das Finale · noch KEIN Countdown · ~2,5 Runden",
+      "gegner": [
+        { "ref": "brecher", "stufe": "t2", "anzahl": 1, "notiz": "lebender Rammbock · Rammstoß STR DC 14 → 10 ft zurück und liegend" },
+        { "ref": "krabbler", "stufe": "t3", "anzahl": 1, "notiz": "Reißer · geht sofort auf die Stimme am Amboss · glüht · platzt" }
+      ]
+    },
+    {
+      "id": "E8",
+      "nr": "E8",
+      "szene": "Szene 6 · Das Finale",
+      "name": "Die Brutmutter",
+      "funktion": "Countdown 10 Runden · max. 2 Adds gleichzeitig auf dem Feld",
+      "gegner": [
+        { "ref": "brutmutter", "stufe": "leiter125", "anzahl": 1, "notiz": "HP-Leiter nach E6: ≤2 Rd → 135 · 3 Rd → 125 · 4+ Rd → 110 (Stufe im Kasten-Menü umstellen)" },
+        { "ref": "himmelsschwaermer", "stufe": "t1", "anzahl": 8, "spaeter": "Warteschlange", "notiz": "draußen · max. 2 gleichzeitig auf dem Feld · +1 je Montage-Fehlschlag" }
+      ]
+    }
+  ]
+}

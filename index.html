@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>HP-Zähler · Die letzte Nacht</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no, maximum-scale=1">
+<meta name="theme-color" content="#0e0f12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HP-Zähler">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<header id="bar">
+  <button class="nav" id="prev" aria-label="Encounter zurück">‹</button>
+  <button id="titel">
+    <span class="nr" id="t-nr">–</span>
+    <span class="txt">
+      <span class="name" id="t-name">lädt …</span>
+      <span class="szene" id="t-szene"></span>
+    </span>
+  </button>
+  <button class="nav" id="next" aria-label="Encounter vor">›</button>
+  <div class="summe" id="summe"></div>
+  <button class="tool" id="add" aria-label="Gegner hinzufügen">+</button>
+  <button class="tool" id="reset" aria-label="Encounter zurücksetzen">⟳</button>
+</header>
+
+<main id="feld"></main>
+
+<div id="sheet" hidden>
+  <div class="sheet-box" id="sheet-box">
+    <div class="sheet-kopf">
+      <span id="sheet-titel"></span>
+      <button id="sheet-zu" aria-label="schließen">✕</button>
+    </div>
+    <div id="sheet-inhalt"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
