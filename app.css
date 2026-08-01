@@ -315,9 +315,13 @@ button {
 .delta.zu { background: var(--gruen); }
 
 /* Fuß */
+/* Eingerückt, damit die Enden nicht in die runden Ecken laufen. */
 .balken {
   height: 4px;
   flex: 0 0 auto;
+  margin: 0 10px 9px;
+  border-radius: 2px;
+  overflow: hidden;
   background: var(--rand);
 }
 .balken i {
@@ -328,23 +332,6 @@ button {
 }
 .balken i.mittel { background: var(--gelb); }
 .balken i.tief   { background: var(--rot); }
-
-.notiz {
-  flex: 0 0 auto;
-  height: 30px;            /* feste Hoehe: sonst schiebt eine lange Notiz den Kasten auf */
-  padding: 3px 8px 0;
-  font-size: 10px;
-  line-height: 13px;
-  color: var(--text-2);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;   /* Rest steht im Plättchen-Menü */
-  overflow: hidden;
-}
-.notiz .spaeter-tag {
-  color: var(--gelb);
-  font-weight: 700;
-}
 
 /* ─── Sheet ─────────────────────────────────── */
 

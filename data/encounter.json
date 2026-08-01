@@ -9,7 +9,7 @@
       "stufe": "zeigt auf kreaturen[].stufen[].id",
       "anzahl": "wie viele Kaesten angelegt werden",
       "spaeter": "optional; Text wie 'ab Rd. 1'. Der Kasten wird gestrichelt gezeichnet, zaehlt aber normal.",
-      "notiz": "eine Zeile auf dem Kasten"
+      "notiz": "Merkzettel. Steht NICHT auf dem Kasten - der zeigt nur die Lebenszahl -, sondern im Plaettchen-Menue."
     }
   },
   "encounters": [

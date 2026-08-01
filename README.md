@@ -34,8 +34,9 @@ Zwei JSON-Dateien, beide direkt im Repo:
 * **`data/kreaturen.json`** — der Katalog. Pro Kreatur ein `ref`, ein Name und die Stufen
   mit `ac` und `hp`. Nur was der Zähler braucht.
 * **`data/encounter.json`** — wer in welchem Encounter auf dem Feld steht. `ref` und
-  `stufe` zeigen in den Katalog, `anzahl` sagt wie viele Kästen, `notiz` ist die Zeile
-  unter dem Kasten, `spaeter` markiert Nachschub.
+  `stufe` zeigen in den Katalog, `anzahl` sagt wie viele Kästen, `spaeter` markiert
+  Nachschub. `notiz` ist ein Merkzettel, der **nicht** auf dem Kasten steht — der zeigt
+  nur die Lebenszahl — sondern im Plättchen-Menü.
 
 Neuen Gegner anlegen: Eintrag in `kreaturen.json`, fertig — er steht dann auch im
 `+`-Menü. Reihenfolge der Encounter in der Datei = Reihenfolge der Vor/Zurück-Knöpfe.
@@ -73,8 +74,10 @@ Branch `main`, Ordner `/ (root)`. Nach etwa einer Minute liegt die App unter
 **Aufs iPad holen:** die Seite in Safari öffnen → Teilen-Menü → *Zum Home-Bildschirm*.
 Danach startet sie ohne Browser-Leiste und läuft offline weiter.
 
-Wenn ein Update nicht durchkommt: App vom Homescreen schließen und neu starten, der
-Service Worker zieht die neue Fassung beim nächsten Start.
+**Update aufs iPad:** App aus dem App-Umschalter wischen und neu starten. Der Service
+Worker holt die neue Fassung und lädt die Seite einmal selbst nach. Beim Ausrollen daran
+denken, `CACHE` in `sw.js` hochzuzählen — daran erkennt der Browser, dass es was Neues
+gibt. Zeigt sie trotzdem noch die alte Fassung: einmal mehr neu starten.
 
 ## Aufbau
 

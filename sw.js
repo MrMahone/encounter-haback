@@ -1,6 +1,8 @@
 /* Service Worker: App offline halten, Daten trotzdem frisch ziehen. */
 
-const CACHE = 'ln-hp-v2';
+// Name bei jeder Aenderung an den Dateien hochzaehlen - das ist das Signal,
+// an dem der Browser merkt, dass es eine neue Fassung gibt.
+const CACHE = 'ln-hp-v3';
 
 const SHELL = [
   './',

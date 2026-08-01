@@ -58,6 +58,15 @@ const clamp = (v, lo, hi) => v < lo ? lo : v > hi ? hi : v;
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
+    // Uebernimmt eine neue Fassung, laedt die Seite einmal neu. Sonst zeigt der
+    // erste Start nach einem Update noch die alte Fassung aus dem Cache und man
+    // muesste die App zweimal schliessen.
+    let schonNeu = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (schonNeu) return;
+      schonNeu = true;
+      location.reload();
+    });
   }
 })();
 
@@ -205,8 +214,7 @@ function baueKarte(inst, nr) {
       '<div class="hp"><span class="zahl">0</span><span class="von"></span></div>' +
       '<div class="delta"></div>' +
     '</div>' +
-    '<div class="balken"><i></i></div>' +
-    '<div class="notiz"></div>';
+    '<div class="balken"><i></i></div>';
 
   const q = (s) => karte.querySelector(s);
   const ref = {
@@ -227,10 +235,8 @@ function baueKarte(inst, nr) {
   q('.unter').innerHTML = (kurzStufe ? '<span class="stufe">' + esc(kurzStufe) + '</span> · ' : '') +
     'AC ' + inst.ac;
 
-  // Notiz
-  const notiz = q('.notiz');
-  notiz.innerHTML = (inst.spaeter ? '<span class="spaeter-tag">' + esc(inst.spaeter) + '</span> · ' : '') +
-    esc(inst.notiz || '');
+  // Auf dem Kasten steht bewusst nur die Lebenszahl. Notiz und "kommt später"
+  // stehen im Plättchen-Menü; auf dem Feld reicht der gestrichelte Rand.
 
   // Tippflächen
   q('.zone.plus').addEventListener('pointerdown',  (ev) => runter(ev, inst, +1));
