@@ -2,21 +2,94 @@
 
 /* ─── Fußleiste ─────────────────────────────── */
 
+/* Immer sichtbar: links die zwei Knöpfe, Mitte die Reihenfolge,
+   rechts der Rundenzähler. */
 #fuss {
   flex: 0 0 auto;
   display: flex;
-  align-items: stretch;
-  gap: 5px;
+  align-items: center;
+  gap: 6px;
   padding: 6px 8px;
   border-top: 1px solid var(--rand);
   background: #12141a;
+}
+
+.fuss-tool {
+  flex: 0 0 auto;
+  width: 44px; height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: var(--karte-2);
+  color: var(--text-2);
+}
+.fuss-tool:active { background: var(--rand); color: var(--text); }
+
+.ini-leiste {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 5px;
+  padding: 0 4px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  border-left: 1px solid var(--rand);
+  border-right: 1px solid var(--rand);
+  margin: 0 2px;
 }
-#fuss[hidden] { display: none; }
 
+.ini-hinweis {
+  align-self: center;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-2);
+  border-radius: 9px;
+}
+.ini-hinweis:active { background: var(--karte-2); }
+
+/* ─── Rundenzähler ──────────────────────────── */
+
+.ini-runde {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.ini-runde button {
+  width: 36px; height: 54px;
+  border-radius: 10px;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--text-2);
+  background: var(--karte-2);
+}
+.ini-runde button:active { background: var(--rand); color: var(--text); }
+.ini-runde-zahl {
+  min-width: 46px;
+  text-align: center;
+  line-height: 1.05;
+}
+.ini-runde-zahl span {
+  display: block;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.ini-runde-zahl b {
+  display: block;
+  font-size: 22px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Nicht schrumpfen: lieber scrollt die Leiste, als dass der Name des
+   Aktiven auf "Br…" zusammenfaellt. zeichne() schiebt ihn ins Bild. */
 .ini-chip {
-  flex: 0 1 auto;
+  flex: 0 0 auto;
   min-width: 0;
   display: flex;
   align-items: center;
@@ -125,7 +198,43 @@
   border-radius: 10px;
   background: var(--karte-2);
 }
-.ini-wahl:active, .ini-folge-zeile:active { background: var(--rand); }
+.ini-wahl:active { background: var(--rand); }
+.ini-folge-zeile { padding-left: 4px; }
+
+/* ─── Verschieben ───────────────────────────── */
+
+.ini-liste { position: relative; }
+
+.ini-griff {
+  flex: 0 0 auto;
+  width: 30px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  color: var(--rand-hell);
+  touch-action: none;      /* halten und ziehen, nicht scrollen */
+}
+.ini-griff:active { background: var(--rand); color: var(--text-2); }
+
+.ini-folge-zeile.zieht {
+  position: relative;
+  z-index: 5;
+  background: var(--rand);
+  box-shadow: 0 8px 22px rgba(0,0,0,.55);
+  transition: none;
+}
+.ini-folge-zeile:not(.zieht) { transition: transform .12s; }
+
+.ini-weg {
+  flex: 0 0 auto;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.ini-weg:active { background: var(--rand-hell); color: var(--text); }
 .ini-wahl.drin { outline: 2px solid var(--gelb); outline-offset: -2px; }
 .ini-wahl.blass .ini-wahl-txt b { color: var(--text-2); font-weight: 400; }
 .ini-wahl.tot, .ini-folge-zeile.tot { opacity: .45; }
@@ -151,7 +260,6 @@
   min-width: 16px;
   text-align: right;
 }
-.ini-folge-zeile .ini-marke { color: var(--text-2); font-weight: 400; }
 .ini-folge-zeile .ini-pos { color: var(--gelb); opacity: 1; font-size: 15px; min-width: 18px; }
 
 .ini-leer {

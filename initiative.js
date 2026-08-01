@@ -4,25 +4,27 @@
    start(api) übergeben wird - keine Kästen, keinen Tipp-Zähler, kein
    localStorage. Umgekehrt weiß der HP-Zähler von hier nur zeichne().
 
-   Ablauf: Aufstellung (Gegner und Charaktere in Reihenfolge antippen)
-   -> Kampf starten -> Fußleiste. Dort ist immer genau einer aktiv, der
-   nächste wird angeteasert, der Rest steht kompakt daneben. Weiter geht
-   es durch Antippen, sonst passiert nichts von allein. */
+   Die Fußleiste ist immer da: links die zwei Knöpfe, in der Mitte die
+   Reihenfolge, rechts der Rundenzähler. Alles von Hand - es passiert
+   nichts von allein. */
 
 'use strict';
 
 window.Initiative = (function () {
 
-  let A = null;        // Schnittstelle zur App
-  let aufstellung = [];  // Arbeitskopie im Popup
-  let malenAuf = null;   // Neuzeichnen der beiden Popup-Spalten
+  let A = null;           // Schnittstelle zur App
+  let aufstellung = [];   // Arbeitskopie im Popup
+  let malenAuf = null;    // Neuzeichnen der beiden Popup-Spalten
+
+  const klemm = (v, lo, hi) => v < lo ? lo : v > hi ? hi : v;
 
   /* ── Zustand ── */
 
   function daten() {
     const alle = A.initiative();
     const id = A.encId();
-    if (!alle[id]) alle[id] = { folge: [], aktiv: 0 };
+    if (!alle[id]) alle[id] = { folge: [], aktiv: 0, runde: 1 };
+    if (!alle[id].runde) alle[id].runde = 1;
     return alle[id];
   }
 
@@ -53,15 +55,24 @@ window.Initiative = (function () {
   /* ── Fußleiste ── */
 
   function zeichne() {
-    const fuss = document.getElementById('fuss');
-    if (!fuss || !A) return;
+    const leiste = document.getElementById('ini-leiste');
+    if (!leiste || !A) return;
 
     const d = saubereFolge();
-    fuss.innerHTML = '';
-    fuss.hidden = d.folge.length === 0;
-    if (fuss.hidden) return;
+    leiste.innerHTML = '';
+    document.getElementById('runde-zahl').textContent = d.runde;
+
+    if (!d.folge.length) {
+      const hinweis = document.createElement('button');
+      hinweis.className = 'ini-hinweis';
+      hinweis.textContent = 'Keine Initiative — hier tippen zum Aufstellen';
+      hinweis.onclick = aufstellen;
+      leiste.appendChild(hinweis);
+      return;
+    }
 
     const naechster = (d.aktiv + 1) % d.folge.length;
+    let aktivChip = null;
 
     d.folge.forEach((schluessel, i) => {
       const e = loese(schluessel);
@@ -71,9 +82,7 @@ window.Initiative = (function () {
       chip.className = 'ini-chip ' + rolle + (e.tot ? ' tot' : '');
       chip.setAttribute('aria-label', (i + 1) + '. ' + e.name);
 
-      if (rolle === 'aktiv') {
-        chip.appendChild(zahl(i + 1));
-      }
+      if (rolle === 'aktiv') chip.appendChild(zahl(i + 1));
       chip.appendChild(punkt(e));
       if (rolle !== 'klein') {
         const txt = document.createElement('span');
@@ -84,8 +93,24 @@ window.Initiative = (function () {
       }
 
       chip.onclick = () => { d.aktiv = i; A.speichern(); zeichne(); };
-      fuss.appendChild(chip);
+      leiste.appendChild(chip);
+      if (rolle === 'aktiv') aktivChip = chip;
     });
+
+    if (aktivChip) insBild(leiste, aktivChip);
+  }
+
+  // Passen nicht alle in die Leiste, wandert sie mit - der Aktive ist immer
+  // zu sehen, und moeglichst auch der Angeteaserte rechts daneben.
+  function insBild(leiste, chip) {
+    const links = chip.offsetLeft - 6;
+    const rechts = chip.offsetLeft + chip.offsetWidth + 130;
+    if (links < leiste.scrollLeft) {
+      leiste.scrollLeft = links;
+    } else if (rechts > leiste.scrollLeft + leiste.clientWidth) {
+      leiste.scrollLeft = Math.min(rechts - leiste.clientWidth,
+                                   leiste.scrollWidth - leiste.clientWidth);
+    }
   }
 
   function zahl(n) {
@@ -107,6 +132,15 @@ window.Initiative = (function () {
     }
     s.textContent = e.nr ? String(e.nr) : '';
     return s;
+  }
+
+  /* ── Rundenzähler: rein manuell ── */
+
+  function runde(d) {
+    const z = daten();
+    z.runde = klemm(z.runde + d, 1, 99);
+    A.speichern();
+    document.getElementById('runde-zahl').textContent = z.runde;
   }
 
   /* ── Popup: Aufstellung ── */
@@ -136,12 +170,7 @@ window.Initiative = (function () {
     spalte.appendChild(A.sheet.gruppe('Gegner — in Reihenfolge antippen'));
 
     const gegner = A.gegner();
-    if (!gegner.length) {
-      const leer = document.createElement('div');
-      leer.className = 'ini-leer';
-      leer.textContent = 'Kein Gegner auf dem Feld.';
-      spalte.appendChild(leer);
-    }
+    if (!gegner.length) spalte.appendChild(leerzeile('Kein Gegner auf dem Feld.'));
     gegner.forEach(g => spalte.appendChild(wahlzeile('g:' + g.uid, {
       art: 'gegner', name: g.name, stufe: g.stufe, nr: g.nr, tag: g.tag, tot: g.tot
     })));
@@ -151,6 +180,13 @@ window.Initiative = (function () {
       art: 'spieler', name: s.name || ('Spieler ' + (i + 1)), stufe: '', nr: 0,
       tag: s.tag, tot: false, blass: !s.name
     })));
+  }
+
+  function leerzeile(text) {
+    const d = document.createElement('div');
+    d.className = 'ini-leer';
+    d.textContent = text;
+    return d;
   }
 
   function wahlzeile(schluessel, e) {
@@ -180,51 +216,57 @@ window.Initiative = (function () {
 
   function maleFolge(spalte) {
     spalte.innerHTML = '';
-    spalte.appendChild(A.sheet.gruppe('Reihenfolge (' + aufstellung.length + ')'));
+    spalte.appendChild(A.sheet.gruppe('Reihenfolge (' + aufstellung.length + ') — am Griff verschieben'));
+
+    const liste = document.createElement('div');
+    liste.className = 'ini-liste';
+    spalte.appendChild(liste);
 
     if (!aufstellung.length) {
-      const leer = document.createElement('div');
-      leer.className = 'ini-leer';
-      leer.textContent = 'Noch nichts gewählt. Links antippen — die Reihenfolge entsteht hier.';
-      spalte.appendChild(leer);
+      liste.appendChild(leerzeile('Noch nichts gewählt. Links antippen — die Reihenfolge entsteht hier.'));
     }
 
     aufstellung.forEach((schluessel, i) => {
       const e = loese(schluessel);
       if (!e) return;
-      const z = document.createElement('button');
+
+      const z = document.createElement('div');
       z.className = 'ini-folge-zeile' + (e.tot ? ' tot' : '');
+
+      const griff = document.createElement('button');
+      griff.className = 'ini-griff';
+      griff.setAttribute('aria-label', 'verschieben');
+      griff.innerHTML = '<svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">' +
+        '<circle cx="5" cy="3" r="1.4"/><circle cx="11" cy="3" r="1.4"/>' +
+        '<circle cx="5" cy="8" r="1.4"/><circle cx="11" cy="8" r="1.4"/>' +
+        '<circle cx="5" cy="13" r="1.4"/><circle cx="11" cy="13" r="1.4"/></svg>';
+      griff.addEventListener('pointerdown', (ev) => ziehStart(ev, i, z, liste));
+      z.appendChild(griff);
+
       z.appendChild(zahl(i + 1));
       z.appendChild(punkt(e));
+
       const txt = document.createElement('span');
       txt.className = 'ini-wahl-txt';
       txt.innerHTML = '<b>' + esc(e.name) + '</b>' + (e.stufe ? ' <i>' + esc(e.stufe) + '</i>' : '');
       z.appendChild(txt);
-      const weg = document.createElement('span');
-      weg.className = 'ini-marke';
+
+      const weg = document.createElement('button');
+      weg.className = 'ini-weg';
+      weg.setAttribute('aria-label', 'aus der Reihenfolge nehmen');
       weg.textContent = '✕';
+      weg.onclick = () => { aufstellung.splice(i, 1); malenAuf(); };
       z.appendChild(weg);
-      z.onclick = () => { aufstellung.splice(i, 1); malenAuf(); };
-      spalte.appendChild(z);
+
+      liste.appendChild(z);
     });
 
     const knoepfe = document.createElement('div');
     knoepfe.className = 'ini-knoepfe';
-
-    const zurueck = document.createElement('button');
-    zurueck.className = 'ini-knopf';
-    zurueck.textContent = '‹ Letzten zurück';
-    zurueck.disabled = !aufstellung.length;
-    zurueck.onclick = () => { aufstellung.pop(); malenAuf(); };
-    knoepfe.appendChild(zurueck);
-
-    const leeren = document.createElement('button');
-    leeren.className = 'ini-knopf';
-    leeren.textContent = 'Leeren';
-    leeren.disabled = !aufstellung.length;
-    leeren.onclick = () => { aufstellung = []; malenAuf(); };
-    knoepfe.appendChild(leeren);
-
+    knoepfe.appendChild(kleinknopf('‹ Letzten zurück', !aufstellung.length,
+      () => { aufstellung.pop(); malenAuf(); }));
+    knoepfe.appendChild(kleinknopf('Leeren', !aufstellung.length,
+      () => { aufstellung = []; malenAuf(); }));
     spalte.appendChild(knoepfe);
 
     const los = document.createElement('button');
@@ -255,6 +297,87 @@ window.Initiative = (function () {
       };
       spalte.appendChild(weg);
     }
+  }
+
+  function kleinknopf(text, aus, tun) {
+    const b = document.createElement('button');
+    b.className = 'ini-knopf';
+    b.textContent = text;
+    b.disabled = aus;
+    b.onclick = tun;
+    return b;
+  }
+
+  /* ── Verschieben per Griff ──
+     Kein HTML5-Drag-and-Drop: das gibt es auf dem iPad nicht. Stattdessen
+     Zeigerereignisse, die Zeile folgt dem Finger, die anderen machen Platz.
+     Sortiert wird erst beim Loslassen. */
+
+  let randTimer = null, randSchritt = 0;
+
+  function ziehStart(ev, i, zeile, liste) {
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    const zeilen = [...liste.children];
+    if (zeilen.length < 2) return;
+
+    // Festhalten: ev.currentTarget ist nach dem Ereignis null, die Callbacks
+    // unten laufen aber spaeter.
+    const griff = ev.currentTarget;
+    const hoehe = zeile.offsetHeight + 5;   // Zeile plus Abstand
+    const startY = ev.clientY;
+    let ziel = i;
+
+    zeile.classList.add('zieht');
+    try { griff.setPointerCapture(ev.pointerId); } catch (_) {}
+
+    const bewegt = (e) => {
+      const r = liste.getBoundingClientRect();
+      ziel = klemm(Math.floor((e.clientY - r.top) / hoehe), 0, zeilen.length - 1);
+      zeile.style.transform = 'translateY(' + (e.clientY - startY) + 'px)';
+      zeilen.forEach((z, j) => {
+        if (z === zeile) return;
+        let v = 0;
+        if (i < ziel && j > i && j <= ziel) v = -hoehe;
+        else if (i > ziel && j >= ziel && j < i) v = hoehe;
+        z.style.transform = v ? 'translateY(' + v + 'px)' : '';
+      });
+      randScrollen(e.clientY);
+    };
+
+    const ende = () => {
+      griff.removeEventListener('pointermove', bewegt);
+      griff.removeEventListener('pointerup', ende);
+      griff.removeEventListener('pointercancel', ende);
+      randStopp();
+      if (ziel !== i) {
+        const [was] = aufstellung.splice(i, 1);
+        aufstellung.splice(ziel, 0, was);
+      }
+      malenAuf();
+    };
+
+    griff.addEventListener('pointermove', bewegt);
+    griff.addEventListener('pointerup', ende);
+    griff.addEventListener('pointercancel', ende);
+  }
+
+  // Am oberen und unteren Rand des Popups mitscrollen, damit man auch
+  // ueber eine lange Liste hinweg verschieben kann.
+  function randScrollen(y) {
+    const box = document.getElementById('sheet-inhalt');
+    const r = box.getBoundingClientRect();
+    randSchritt = y < r.top + 50 ? -9 : y > r.bottom - 50 ? 9 : 0;
+    if (!randSchritt) return randStopp();
+    if (randTimer) return;
+    randTimer = setInterval(() => { box.scrollTop += randSchritt; }, 16);
+  }
+
+  function randStopp() {
+    if (randTimer) clearInterval(randTimer);
+    randTimer = null;
+    randSchritt = 0;
   }
 
   /* ── Popup: Charaktere ── */
@@ -312,10 +435,11 @@ window.Initiative = (function () {
 
   function start(api) {
     A = api;
-    const ini = document.getElementById('ini');
-    const chr = document.getElementById('charaktere');
-    if (ini) ini.onclick = aufstellen;
-    if (chr) chr.onclick = charaktere;
+    const w = (id, tun) => { const el = document.getElementById(id); if (el) el.onclick = tun; };
+    w('ini', aufstellen);
+    w('charaktere', charaktere);
+    w('runde-ab', () => runde(-1));
+    w('runde-auf', () => runde(+1));
     zeichne();
   }
 

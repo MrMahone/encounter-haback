@@ -26,19 +26,30 @@ Zweites, eigenständiges Modul (`initiative.js` / `initiative.css`). Hängt übe
 schmale Schnittstelle am HP-Zähler und kennt von ihm nur, welche Gegner auf dem Feld
 stehen — keine Kästen, keinen Tipp-Zähler.
 
+Die Fußleiste ist **immer da**: links die zwei Knöpfe, in der Mitte die Reihenfolge,
+rechts der Rundenzähler.
+
 | Geste | Wirkung |
 |---|---|
-| **Zahnrad** in der Kopfzeile | Namen und Plättchen der drei Charaktere. Gilt für den ganzen Abend |
-| **Listen-Icon** in der Kopfzeile | Aufstellung öffnen |
+| **Zahnrad** unten links | Namen und Plättchen der drei Charaktere. Gilt für den ganzen Abend |
+| **Listen-Icon** daneben | Aufstellung öffnen |
 | in der Aufstellung antippen | hängt an die Reihenfolge an — rechts entsteht sie live mit |
 | nochmal antippen | nimmt wieder raus, der Rest rutscht auf |
-| **Kampf starten** | Fußleiste erscheint |
+| **am Griff ziehen** | verschiebt einen Eintrag in der Reihenfolge |
+| **✕** an der Zeile | nimmt ihn raus |
+| **Kampf starten** | die Reihenfolge steht in der Fußleiste |
 | unten einen antippen | der ist dran. Alle anderen werden wieder kompakt |
+| **‹ ›** ganz rechts | Rundenzähler, rein manuell (1–99, pro Encounter gemerkt) |
 
 In der Fußleiste ist immer genau einer **aktiv** (breit, mit Position und Namen), der
-**nächste** wird angeteasert, alle übrigen stehen kompakt daneben — sie passen in eine
-Reihe, auch bei zwölf Beteiligten. Nach dem Letzten tippt man wieder vorne an; es gibt
-keine Runden- oder Zurück-Knöpfe, weil alles über Antippen geht.
+**nächste** wird angeteasert, alle übrigen stehen kompakt daneben. Passen nicht alle
+gleichzeitig hin, wandert die Leiste beim Weiterklicken mit — der Aktive und der Nächste
+sind immer im Bild und werden nie abgeschnitten. Nach dem Letzten tippt man wieder vorne
+an; es gibt keine Weiter-Knöpfe, weil alles über Antippen geht.
+
+Das Verschieben läuft über Zeigerereignisse, nicht über HTML5-Drag-and-Drop — das gibt es
+auf dem iPad nicht. Am unteren und oberen Rand des Popups scrollt die Liste beim Ziehen
+mit, damit man auch über eine lange Reihenfolge hinweg umsortieren kann.
 
 Gegner sind runde Plättchen mit ihrer Laufnummer, Charaktere eckige. Wird ein Kasten auf
 TOT gesetzt, wird sein Eintrag ausgegraut — verschwindet aber nicht, denn geklickt wird
