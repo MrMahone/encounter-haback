@@ -293,7 +293,8 @@
 .ini-los {
   display: block;
   width: 100%;
-  padding: 14px;
+  padding: 15px;
+  margin-bottom: 4px;
   border-radius: 11px;
   background: var(--gelb);
   color: #14161a;
@@ -301,8 +302,10 @@
   font-weight: 800;
 }
 .ini-los:disabled { opacity: .3; }
+/* Steht unter den Abraeum-Knoepfen, deutlich abgesetzt */
 .ini-los.weg {
-  margin-top: 6px;
+  margin: 16px 0 0;
+  padding: 12px;
   background: var(--karte-2);
   color: var(--rot-weich);
   font-weight: 700;

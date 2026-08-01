@@ -270,6 +270,24 @@ window.Initiative = (function () {
 
   function maleFolge(spalte) {
     spalte.innerHTML = '';
+
+    // Bestaetigen steht OBEN, "Letzten zurueck" und "Leeren" unten. Lagen sie
+    // beieinander, griff man beim Bestaetigen leicht daneben und raeumte alles
+    // ab, was man gerade zusammengestellt hatte.
+    const los = document.createElement('button');
+    los.className = 'ini-los';
+    los.textContent = daten().folge.length ? 'Übernehmen' : 'Kampf starten';
+    los.disabled = !aufstellung.length;
+    los.onclick = () => {
+      const d = daten();
+      d.folge = aufstellung.slice();
+      d.aktiv = 0;
+      A.speichern();
+      A.sheet.zu();
+      zeichne();
+    };
+    spalte.appendChild(los);
+
     spalte.appendChild(A.sheet.gruppe('Reihenfolge (' + aufstellung.length + ') — am Griff verschieben'));
 
     const liste = document.createElement('div');
@@ -324,20 +342,6 @@ window.Initiative = (function () {
     knoepfe.appendChild(kleinknopf('Leeren', !aufstellung.length,
       () => { aufstellung = []; malenAuf(); }));
     spalte.appendChild(knoepfe);
-
-    const los = document.createElement('button');
-    los.className = 'ini-los';
-    los.textContent = daten().folge.length ? 'Übernehmen' : 'Kampf starten';
-    los.disabled = !aufstellung.length;
-    los.onclick = () => {
-      const d = daten();
-      d.folge = aufstellung.slice();
-      d.aktiv = 0;
-      A.speichern();
-      A.sheet.zu();
-      zeichne();
-    };
-    spalte.appendChild(los);
 
     if (daten().folge.length) {
       const weg = document.createElement('button');
