@@ -282,6 +282,7 @@ function runter(ev, inst, sign) {
   p.commitTimer = null;
   p.vorGeste = p.delta;
   p.startY = ev.clientY;
+  p.zeiger = ev.pointerType;
   p.bewegt = false;
   p.abgebrochen = false;
   p.sign = sign;
@@ -312,21 +313,24 @@ function stoppLauf() {
   p.holdTimer = p.repTimer = null;
 }
 
+// Nur merken, dass der Finger gewandert ist - noch nichts verwerfen. Ob es
+// wirklich Scrollen war, sagt uns erst der Browser (siehe abbruch).
+// Mit Maus oder Stift wird gar nicht gescrollt: eine unruhige Hand waehrend
+// des Klicks ist dort kein Wischen und darf den Klick nicht schlucken.
 function bewegt(ev) {
-  if (!p || p.bewegt || p.abgebrochen) return;
-  if (Math.abs(ev.clientY - p.startY) > SCROLL_PX) {
-    p.bewegt = true;
-    gesteVerwerfen();
-  }
+  if (!p || p.zeiger !== 'touch' || p.bewegt || p.abgebrochen) return;
+  if (Math.abs(ev.clientY - p.startY) > SCROLL_PX) p.bewegt = true;
 }
 
+// pointercancel: der Browser hat die Geste an sich gezogen. Zusammen mit einer
+// echten Fingerbewegung heisst das Scrollen - sonst war es ein normaler Tipp.
 function abbruch() {
   if (!p) return;
   if (p.bewegt) { gesteVerwerfen(); return; }
   hoch();
 }
 
-// Der Finger ist gewandert: dieser Tipp war Scrollen, nicht Zählen.
+// Es wurde gescrollt: dieser Tipp zaehlt nicht.
 function gesteVerwerfen() {
   stoppLauf();
   p.abgebrochen = true;
