@@ -17,7 +17,7 @@ nur die Frage „wie viel hat das Ding noch".
 | **farbiger Punkt** oben links | Plättchen-Farbe wählen (passend zum Marker auf dem Tisch), Stufe wechseln, HP zurücksetzen, Kasten entfernen |
 | **‹ ›** in der Kopfzeile | Encounter vor / zurück |
 | **Titel** in der Kopfzeile | Encounter-Liste zum Springen + „alles zurücksetzen" |
-| **+** | Gegner dazuholen: erst Name wählen, dann Stufe |
+| **+** hinter dem letzten Kasten | Gegner dazuholen: erst Name wählen, dann Stufe |
 | **⟳** | diesen Encounter zurücksetzen (Grundbesetzung oder nur HP auffüllen) |
 
 ## Initiative
@@ -51,9 +51,13 @@ Das Verschieben läuft über Zeigerereignisse, nicht über HTML5-Drag-and-Drop �
 auf dem iPad nicht. Am unteren und oberen Rand des Popups scrollt die Liste beim Ziehen
 mit, damit man auch über eine lange Reihenfolge hinweg umsortieren kann.
 
-Gegner sind runde Plättchen mit ihrer Laufnummer, Charaktere eckige. Wird ein Kasten auf
-TOT gesetzt, wird sein Eintrag ausgegraut — verschwindet aber nicht, denn geklickt wird
-weiter von Hand. Entfernte Gegner fallen automatisch aus der Reihenfolge.
+Gegner sind runde Plättchen mit ihrer Laufnummer, Charaktere eckige.
+
+**TOT auf einem Kasten nimmt ihn aus der Leiste.** Nicht aus der gespeicherten
+Reihenfolge — wer wiederbelebt wird, steht wieder an seiner alten Stelle. Die übrigen
+werden dabei neu durchnummeriert, damit die Zahlen zu dem passen, was man sieht. Stirbt
+gerade der Aktive, rückt der nächste Lebende nach. Entfernte Gegner fallen ganz aus der
+Reihenfolge.
 
 Jeder Encounter hat seine eigene Initiative. Ein Wechsel lässt sie stehen; man kommt
 zurück und der Kampf ist noch da. **Initiative beenden** in der Aufstellung räumt sie weg.

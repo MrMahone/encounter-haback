@@ -62,27 +62,46 @@ window.Initiative = (function () {
     leiste.innerHTML = '';
     document.getElementById('runde-zahl').textContent = d.runde;
 
-    if (!d.folge.length) {
+    // Wer tot ist, fliegt aus der Leiste. Nicht aus der gespeicherten
+    // Reihenfolge - wird die Flagge zurueckgenommen, steht er wieder da,
+    // wo er war.
+    const sichtbar = [];
+    d.folge.forEach((schluessel, i) => {
+      const e = loese(schluessel);
+      if (e && !e.tot) sichtbar.push({ schluessel: schluessel, i: i, e: e });
+    });
+
+    if (!sichtbar.length) {
       const hinweis = document.createElement('button');
       hinweis.className = 'ini-hinweis';
-      hinweis.textContent = 'Keine Initiative — hier tippen zum Aufstellen';
+      hinweis.textContent = d.folge.length
+        ? 'Alle erledigt — hier tippen zum Neuaufstellen'
+        : 'Keine Initiative — hier tippen zum Aufstellen';
       hinweis.onclick = aufstellen;
       leiste.appendChild(hinweis);
       return;
     }
 
-    const naechster = (d.aktiv + 1) % d.folge.length;
+    // Ist der Aktive gerade gestorben, rueckt der naechste Lebende nach.
+    let aktivPos = sichtbar.findIndex(x => x.i === d.aktiv);
+    if (aktivPos < 0) {
+      aktivPos = sichtbar.findIndex(x => x.i > d.aktiv);
+      if (aktivPos < 0) aktivPos = 0;
+      d.aktiv = sichtbar[aktivPos].i;
+      A.speichern();
+    }
+    const naechstePos = (aktivPos + 1) % sichtbar.length;
     let aktivChip = null;
 
-    d.folge.forEach((schluessel, i) => {
-      const e = loese(schluessel);
-      const rolle = i === d.aktiv ? 'aktiv' : i === naechster ? 'naechster' : 'klein';
+    sichtbar.forEach((x, pos) => {
+      const e = x.e;
+      const rolle = pos === aktivPos ? 'aktiv' : pos === naechstePos ? 'naechster' : 'klein';
 
       const chip = document.createElement('button');
-      chip.className = 'ini-chip ' + rolle + (e.tot ? ' tot' : '');
-      chip.setAttribute('aria-label', (i + 1) + '. ' + e.name);
+      chip.className = 'ini-chip ' + rolle;
+      chip.setAttribute('aria-label', (pos + 1) + '. ' + e.name);
 
-      if (rolle === 'aktiv') chip.appendChild(zahl(i + 1));
+      if (rolle === 'aktiv') chip.appendChild(zahl(pos + 1));
       chip.appendChild(punkt(e));
       if (rolle !== 'klein') {
         const txt = document.createElement('span');
@@ -92,7 +111,7 @@ window.Initiative = (function () {
         chip.appendChild(txt);
       }
 
-      chip.onclick = () => { d.aktiv = i; A.speichern(); zeichne(); };
+      chip.onclick = () => { d.aktiv = x.i; A.speichern(); zeichne(); };
       leiste.appendChild(chip);
       if (rolle === 'aktiv') aktivChip = chip;
     });

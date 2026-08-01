@@ -145,11 +145,32 @@ button {
 
 #feld .leer {
   grid-column: 1 / -1;
-  padding: 40px 20px;
+  padding: 30px 20px 6px;
   text-align: center;
   color: var(--text-2);
   font-size: 15px;
   line-height: 1.6;
+}
+
+/* Leerer Platz fuer den naechsten Gegner - steht immer hinter dem letzten Kasten. */
+.plus-kachel {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--rand);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--rand-hell);
+  font-size: 44px;
+  font-weight: 300;
+  line-height: 1;
+  padding-bottom: 6px;
+}
+.plus-kachel:active {
+  border-color: var(--gelb);
+  color: var(--gelb);
+  background: rgba(217, 161, 58, .07);
 }
 
 /* ─── Karte ─────────────────────────────────── */

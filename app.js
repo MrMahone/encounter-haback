@@ -140,7 +140,6 @@ function verdrahten() {
   $('prev').onclick  = () => blaettern(-1);
   $('next').onclick  = () => blaettern(1);
   $('titel').onclick = encounterListe;
-  $('add').onclick   = gegnerHinzufuegen;
   $('reset').onclick = encounterZuruecksetzen;
   $('sheet-zu').onclick = sheetZu;
   $('sheet').onclick = (ev) => { if (ev.target === $('sheet')) sheetZu(); };
@@ -191,16 +190,27 @@ function zeichne() {
   const b = board();
 
   if (!b.length) {
-    feld.innerHTML = '<div class="leer">Kein Gegner auf dem Feld.<br>Mit <b>+</b> oben rechts welche dazuholen.</div>';
-    summe();
-    if (window.Initiative) Initiative.zeichne();
-    return;
+    const leer = document.createElement('div');
+    leer.className = 'leer';
+    leer.innerHTML = 'Kein Gegner auf dem Feld.<br>Über das <b>+</b> welche dazuholen.';
+    feld.appendChild(leer);
   }
 
   boardMitNummern().forEach(e => feld.appendChild(baueKarte(e.inst, e.nr)));
+  feld.appendChild(plusKachel());
 
   summe();
   if (window.Initiative) Initiative.zeichne();
+}
+
+// Steht immer dort, wo der naechste Kasten waere.
+function plusKachel() {
+  const b = document.createElement('button');
+  b.className = 'plus-kachel';
+  b.setAttribute('aria-label', 'Gegner hinzufügen');
+  b.textContent = '+';
+  b.onclick = gegnerHinzufuegen;
+  return b;
 }
 
 function baueKarte(inst, nr) {
