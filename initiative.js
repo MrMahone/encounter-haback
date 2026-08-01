@@ -35,12 +35,12 @@ window.Initiative = (function () {
       const i = +schluessel.slice(2);
       const s = A.spieler()[i];
       if (!s) return null;
-      return { art: 'spieler', name: s.name || ('Spieler ' + (i + 1)),
-               stufe: '', nr: 0, tag: s.tag, tot: false };
+      return { art: 'spieler', name: s.name, blass: !s.benannt,
+               stufe: '', nr: 0, hex: s.hex, tot: false };
     }
     const g = A.gegner().find(x => x.uid === schluessel.slice(2));
     if (!g) return null;
-    return { art: 'gegner', name: g.name, stufe: g.stufe, nr: g.nr, tag: g.tag, tot: g.tot };
+    return { art: 'gegner', name: g.name, stufe: g.stufe, nr: g.nr, hex: g.hex, tot: g.tot };
   }
 
   // Gegner, die es nicht mehr gibt, fallen aus der Reihenfolge
@@ -144,11 +144,10 @@ window.Initiative = (function () {
   function punkt(e) {
     const s = document.createElement('span');
     s.className = 'ini-punkt' + (e.art === 'spieler' ? ' spieler' : '');
-    const f = A.farben.find(x => x.id === e.tag);
-    if (f) {
-      s.style.background = f.hex;
+    if (e.hex) {
+      s.style.background = e.hex;
       s.style.borderColor = 'rgba(255,255,255,.55)';
-      s.style.color = A.istHell(f.hex) ? '#14161a' : '#fff';
+      s.style.color = A.istHell(e.hex) ? '#14161a' : '#fff';
     }
     s.textContent = e.nr ? String(e.nr) : '';
     return s;
@@ -214,13 +213,13 @@ window.Initiative = (function () {
     const gegner = A.gegner();
     if (!gegner.length) spalte.appendChild(leerzeile('Kein Gegner auf dem Feld.'));
     gegner.forEach(g => spalte.appendChild(wahlzeile('g:' + g.uid, {
-      art: 'gegner', name: g.name, stufe: g.stufe, nr: g.nr, tag: g.tag, tot: g.tot
+      art: 'gegner', name: g.name, stufe: g.stufe, nr: g.nr, hex: g.hex, tot: g.tot
     })));
 
     spalte.appendChild(A.sheet.gruppe('Charaktere'));
     A.spieler().forEach((s, i) => spalte.appendChild(wahlzeile('s:' + i, {
-      art: 'spieler', name: s.name || ('Spieler ' + (i + 1)), stufe: '', nr: 0,
-      tag: s.tag, tot: false, blass: !s.name
+      art: 'spieler', name: s.name, stufe: '', nr: 0,
+      hex: s.hex, tot: false, blass: !s.benannt
     })));
   }
 
@@ -440,64 +439,12 @@ window.Initiative = (function () {
     randSchritt = 0;
   }
 
-  /* ── Popup: Charaktere ── */
-
-  function charaktere() {
-    A.sheet.auf('Charaktere', (box) => {
-      const hinweis = document.createElement('div');
-      hinweis.className = 'merk';
-      hinweis.textContent = 'Namen und Plättchen der drei Charaktere. Gilt für den ganzen Abend, ' +
-        'nicht nur für diesen Encounter.';
-      box.appendChild(hinweis);
-
-      A.spieler().forEach((s, i) => {
-        box.appendChild(A.sheet.gruppe('Spieler ' + (i + 1)));
-
-        const feld = document.createElement('input');
-        feld.className = 'ini-eingabe';
-        feld.type = 'text';
-        feld.value = s.name || '';
-        feld.placeholder = 'Name';
-        feld.autocomplete = 'off';
-        feld.oninput = () => { s.name = feld.value.trim(); A.speichern(); zeichne(); };
-        box.appendChild(feld);
-
-        const reihe = document.createElement('div');
-        reihe.className = 'farben spieler';   // eckig, wie das Plättchen der Charaktere
-        const keine = document.createElement('button');
-        keine.className = 'farbe keine' + (s.tag ? '' : ' gewaehlt');
-        keine.textContent = '✕';
-        keine.onclick = () => setzeFarbe(s, null, reihe);
-        reihe.appendChild(keine);
-        A.farben.forEach(f => {
-          const b = document.createElement('button');
-          b.className = 'farbe' + (s.tag === f.id ? ' gewaehlt' : '');
-          b.style.background = f.hex;
-          b.onclick = () => setzeFarbe(s, f.id, reihe);
-          reihe.appendChild(b);
-        });
-        box.appendChild(reihe);
-      });
-    });
-  }
-
-  function setzeFarbe(s, tagId, reihe) {
-    s.tag = tagId;
-    A.speichern();
-    [...reihe.children].forEach((b, idx) => {
-      const treffer = idx === 0 ? !tagId : A.farben[idx - 1].id === tagId;
-      b.classList.toggle('gewaehlt', treffer);
-    });
-    zeichne();
-  }
-
   /* ── Start ── */
 
   function start(api) {
     A = api;
     const w = (id, tun) => { const el = document.getElementById(id); if (el) el.onclick = tun; };
     w('ini', aufstellen);
-    w('charaktere', charaktere);
     w('runde-ab', () => runde(-1));
     w('runde-auf', () => runde(+1));
     zeichne();

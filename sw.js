@@ -2,7 +2,7 @@
 
 // Name bei jeder Aenderung an den Dateien hochzaehlen - das ist das Signal,
 // an dem der Browser merkt, dass es eine neue Fassung gibt.
-const CACHE = 'ln-hp-v10';
+const CACHE = 'ln-hp-v11';
 
 const SHELL = [
   './',
@@ -11,9 +11,12 @@ const SHELL = [
   'app.js',
   'initiative.css',
   'initiative.js',
+  'farben.css',
+  'farben.js',
   'manifest.webmanifest',
   'data/kreaturen.json',
   'data/encounter.json',
+  'data/farben.json',
   'icons/icon-180.png',
   'icons/icon-192.png',
   'icons/icon-512.png',

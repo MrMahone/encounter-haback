@@ -1,0 +1,107 @@
+/* ═══ Farbmodul ═══ */
+
+/* ─── Registerkarten im Einstellungs-Popup ──── */
+
+.fb-reiter {
+  display: flex;
+  gap: 4px;
+  padding: 2px;
+  margin-bottom: 6px;
+  border-radius: 11px;
+  background: var(--karte);
+}
+.fb-reiter-knopf {
+  flex: 1 1 0;
+  padding: 11px 8px;
+  border-radius: 9px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-2);
+}
+.fb-reiter-knopf.an { background: var(--karte-2); color: var(--text); }
+
+.fb-kopf {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.fb-weg {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--rot-weich);
+}
+.fb-weg:active { background: var(--karte-2); }
+
+.fb-dazu {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 13px;
+  border-radius: 10px;
+  background: var(--karte-2);
+  color: var(--text);
+  font-size: 14.5px;
+  font-weight: 700;
+}
+.fb-dazu:active { background: var(--rand); }
+.fb-dazu:disabled { opacity: .3; }
+
+/* ─── Auswahl der Aufsteller ─────────────────── */
+
+/* Alle neun in eine Reihe, damit die Stufenseite nicht endlos wird. */
+.fb-staender {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 5px 4px 2px;
+}
+.fb-stand {
+  width: 38px; height: 27px;
+  border-radius: 6px;                 /* eckig wie der echte Kartenhalter */
+  border: 2px solid transparent;
+  font-size: 13px;
+  line-height: 23px;
+}
+.fb-stand.gewaehlt { border-color: #fff; }
+/* Belegt: nur noch abgedunkelt. Ein ✕ waere hier missverstaendlich - das
+   steht schon fuer "keine Farbe". */
+.fb-stand.belegt { opacity: .18; }
+.fb-stand.keiner {
+  background: transparent;
+  border: 2px dashed var(--rand-hell);
+  color: var(--text-2);
+}
+
+/* ─── Am Kasten ──────────────────────────────── */
+
+/* Der Nodge: Farbe des Aufstellers, auf dem das Vieh steht. */
+.fuss-zeile {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  margin: 0 10px 9px;
+}
+.nodge {
+  flex: 0 0 auto;
+  width: 30px; height: 7px;
+  border-radius: 3px;
+  background: transparent;
+  border: 1px solid var(--rand);      /* damit Weiß und Schwarz beide zu sehen sind */
+}
+.nodge.leer { border-style: dashed; }
+.fuss-zeile .balken { flex: 1 1 auto; margin: 0; height: 7px; border-radius: 3px; }
+
+/* ─── Im Kasten-Menü ─────────────────────────── */
+
+.fb-hinweis {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px 4px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.fb-hinweis .nodge { width: 34px; height: 9px; }

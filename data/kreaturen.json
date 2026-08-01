@@ -11,6 +11,7 @@
       "ref": "himmelsschwaermer",
       "name": "Himmelsschwärmer",
       "kurz": "Schwärmer",
+      "gruppe": "brut",
       "stufen": [
         { "id": "t1", "label": "T1 · Brut", "kurz": "T1", "ac": 12, "hp": 11 },
         { "id": "t2", "label": "T2 · Genährt", "kurz": "T2", "ac": 14, "hp": 22 },
@@ -21,6 +22,7 @@
       "ref": "spucker",
       "name": "Spucker",
       "kurz": "Spucker",
+      "gruppe": "brut",
       "stufen": [
         { "id": "t1", "label": "T1 · Klammerer", "kurz": "T1", "ac": 12, "hp": 10 },
         { "id": "t2", "label": "T2 · Langschlund", "kurz": "T2", "ac": 14, "hp": 18 },
@@ -31,6 +33,7 @@
       "ref": "krabbler",
       "name": "Krabbler",
       "kurz": "Krabbler",
+      "gruppe": "brut",
       "stufen": [
         { "id": "t1", "label": "T1 · Krabbler", "kurz": "T1", "ac": 12, "hp": 13 },
         { "id": "t2", "label": "T2 · Hakenläufer", "kurz": "T2", "ac": 14, "hp": 20 },
@@ -41,6 +44,7 @@
       "ref": "kreischer",
       "name": "Kreischer",
       "kurz": "Kreischer",
+      "gruppe": "brut",
       "stufen": [
         { "id": "t1", "label": "T1 · auf Augenhöhe", "kurz": "T1", "ac": 12, "hp": 5 },
         { "id": "t2", "label": "T2 · 50 ft hoch", "kurz": "T2", "ac": 15, "hp": 5 },
@@ -51,6 +55,7 @@
       "ref": "traeger",
       "name": "Der Träger",
       "kurz": "Träger",
+      "gruppe": "sonder",
       "stufen": [
         { "id": "standard", "label": "Standard (eff. 62 mit Fracht)", "kurz": "", "ac": 13, "hp": 22 }
       ]
@@ -59,6 +64,7 @@
       "ref": "brecher",
       "name": "Der Brecher",
       "kurz": "Brecher",
+      "gruppe": "brut",
       "stufen": [
         { "id": "t1", "label": "T1 · langsam", "kurz": "T1", "ac": 13, "hp": 22 },
         { "id": "t2", "label": "T2 · Rammstoß", "kurz": "T2", "ac": 15, "hp": 40 },
@@ -69,6 +75,7 @@
       "ref": "wartungskonstrukt",
       "name": "Wartungskonstrukt",
       "kurz": "Konstrukt",
+      "gruppe": "sonder",
       "stufen": [
         { "id": "standard", "label": "Der Verwaiste · Resistenz Waffen", "kurz": "", "ac": 17, "hp": 45 }
       ]
@@ -77,6 +84,7 @@
       "ref": "brutmutter",
       "name": "Die Brutmutter",
       "kurz": "Brutmutter",
+      "gruppe": "boss",
       "stufen": [
         { "id": "leiter110", "label": "110 HP · E6 dauerte 4+ Runden", "kurz": "", "ac": 14, "hp": 110 },
         { "id": "leiter125", "label": "125 HP · E6 dauerte 3 Runden", "kurz": "", "ac": 15, "hp": 125 },

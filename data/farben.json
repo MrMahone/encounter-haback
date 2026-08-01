@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "titel": "Die zwei Farbsysteme am Tisch",
+    "stand": "2026-08-01",
+    "aufsteller": "Die farbigen Kartenhalter. Jeder Charakter bekommt einen, und jede Gegner-Gruppe (T1, T2, T3, Sonder, Boss) auch. Auf dem Kasten erscheint die Farbe als Nodge unten.",
+    "stifte": "Die abwischbaren Stifte. Damit malst du oben auf das Schildchen einen Punkt - das ist die Nummer des einzelnen Viehs. Auf dem Kasten erscheint die Farbe als Punkt oben links.",
+    "wie": "Ordnet einer Stiftfarbe den optisch gleichen Aufsteller zu. Wird gebraucht, damit ein Punkt nicht dieselbe Farbe hat wie der Aufsteller, auf dem er steht - und damit Spielerfarben bei der Vergabe zuletzt drankommen.",
+    "hinweis": "Die Hex-Werte sind aus den Fotos abgelesen. Wenn eine Farbe am Tisch anders wirkt: hier aendern, sonst nichts."
+  },
+
+  "aufsteller": [
+    { "id": "weiss",   "name": "Weiß",    "hex": "#EFEFEC" },
+    { "id": "gelb",    "name": "Gelb",    "hex": "#EFD00D" },
+    { "id": "orange",  "name": "Orange",  "hex": "#F58A10" },
+    { "id": "rot",     "name": "Rot",     "hex": "#E52A2C" },
+    { "id": "pink",    "name": "Pink",    "hex": "#E0189E" },
+    { "id": "blau",    "name": "Blau",    "hex": "#1D4FC4" },
+    { "id": "gruen",   "name": "Grün",    "hex": "#1F9F2B" },
+    { "id": "schwarz", "name": "Schwarz", "hex": "#1C1C1C" }
+  ],
+
+  "stifte": [
+    { "id": "hellblau",  "name": "Hellblau", "hex": "#1B9FD8", "wie": null },
+    { "id": "hellgruen", "name": "Hellgrün", "hex": "#2EB424", "wie": "gruen" },
+    { "id": "lila",      "name": "Lila",     "hex": "#7B32C0", "wie": null },
+    { "id": "rosa",      "name": "Rosa",     "hex": "#DD57B8", "wie": "pink" },
+    { "id": "orange",    "name": "Orange",   "hex": "#F0891C", "wie": "orange" },
+    { "id": "braun",     "name": "Braun",    "hex": "#A55B44", "wie": null },
+    { "id": "gruen",     "name": "Grün",     "hex": "#24A95F", "wie": "gruen" },
+    { "id": "blau",      "name": "Blau",     "hex": "#1B4ECB", "wie": "blau" },
+    { "id": "rot",       "name": "Rot",      "hex": "#E42743", "wie": "rot" },
+    { "id": "schwarz",   "name": "Schwarz",  "hex": "#2B2823", "wie": "schwarz" }
+  ],
+
+  "gruppen": [
+    { "id": "t1",     "name": "T1 · Brut",        "standard": "weiss" },
+    { "id": "t2",     "name": "T2 · Genährt",     "standard": "gelb" },
+    { "id": "t3",     "name": "T3 · Vollgesogen", "standard": "rot" },
+    { "id": "sonder", "name": "Sonder",           "standard": "pink" },
+    { "id": "boss",   "name": "Boss",             "standard": "schwarz" }
+  ]
+}

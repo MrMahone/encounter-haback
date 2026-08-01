@@ -11,22 +11,10 @@ const HOLD_MS   = 400;    // ab wann Halten in den Schnelllauf geht
 const TICK_MS   = 90;     // Takt des Schnelllaufs
 const SCROLL_PX = 22;     // ab dieser Fingerbewegung gilt es als Scrollen, nicht als Tipp
 
-const FARBEN = [
-  { id: 'rot',     hex: '#d4423a' },
-  { id: 'orange',  hex: '#e07b2c' },
-  { id: 'gelb',    hex: '#dcc22e' },
-  { id: 'gruen',   hex: '#3fae63' },
-  { id: 'tuerkis', hex: '#2fb0a8' },
-  { id: 'blau',    hex: '#3d7fd6' },
-  { id: 'violett', hex: '#8a5fd0' },
-  { id: 'pink',    hex: '#d9539b' },
-  { id: 'weiss',   hex: '#e8e8e8' },
-  { id: 'grau',    hex: '#565b66' }
-];
-
 let KREATUREN = [];       // Katalog
 let KMAP = {};            // ref -> Kreatur
 let ENCOUNTER = [];       // Liste
+let PALETTE = null;       // data/farben.json
 let state = null;         // { v, encIdx, seq, boards }
 let p = null;             // laufende Eingabe
 const karten = new Map(); // uid -> DOM-Referenzen
@@ -38,13 +26,15 @@ const clamp = (v, lo, hi) => v < lo ? lo : v > hi ? hi : v;
 
 (async function start() {
   try {
-    const [k, e] = await Promise.all([
+    const [k, e, f] = await Promise.all([
       fetch('data/kreaturen.json').then(r => r.json()),
-      fetch('data/encounter.json').then(r => r.json())
+      fetch('data/encounter.json').then(r => r.json()),
+      fetch('data/farben.json').then(r => r.json())
     ]);
     KREATUREN = k.kreaturen;
     KREATUREN.forEach(kr => KMAP[kr.ref] = kr);
     ENCOUNTER = e.encounters;
+    PALETTE = f;
   } catch (err) {
     $('feld').innerHTML = '<div class="leer">Daten konnten nicht geladen werden.<br>' +
       'Die App muss über einen Server laufen (GitHub Pages oder <code>python -m http.server</code>),<br>' +
@@ -54,6 +44,7 @@ const clamp = (v, lo, hi) => v < lo ? lo : v > hi ? hi : v;
 
   ladeState();
   verdrahten();
+  farbenAnbinden();       // zuerst: das Initiativmodul fragt Farben ab
   initiativeAnbinden();
   zeigeEncounter();
 
@@ -81,10 +72,19 @@ function ladeState() {
   if (!state) state = { v: 2, encIdx: 0, seq: 1, boards: {} };
   state.encIdx = clamp(state.encIdx | 0, 0, ENCOUNTER.length - 1);
   // Nachtragen, was in aelteren Staenden noch fehlt
-  if (!Array.isArray(state.spieler)) {
-    state.spieler = [1, 2, 3].map(() => ({ name: '', tag: null }));
+  if (!Array.isArray(state.spieler) || !state.spieler.length) {
+    state.spieler = [1, 2, 3].map(() => ({ name: '', stand: null }));
   }
+  // Fruehere Faelle hatten eine freie Farbe (tag) statt eines Aufstellers
+  state.spieler.forEach(s => {
+    if (!('stand' in s)) s.stand = null;
+    delete s.tag;
+  });
   if (!state.initiative) state.initiative = {};
+  if (!state.stufen) {
+    state.stufen = {};
+    (PALETTE.gruppen || []).forEach(g => { state.stufen[g.id] = g.standard || null; });
+  }
 }
 
 function speichern() {
@@ -106,7 +106,17 @@ function baueBoard(e) {
       arr.push(neueInstanz(g.ref, g.stufe, { spaeter: g.spaeter, notiz: g.notiz }));
     }
   });
+  stifteVerteilen(arr, true);
   return arr;
+}
+
+// Jede Kreatur bekommt ihren Punkt. true = alles neu, false = nur Luecken.
+function stifteVerteilen(liste, alleNeu) {
+  if (window.Farben) Farben.zuteilen(liste, standVonInstanz, alleNeu);
+}
+
+function standVonInstanz(inst) {
+  return window.Farben ? Farben.standVon(KMAP[inst.ref], inst.stufe) : null;
 }
 
 function neueInstanz(ref, stufeId, opt) {
@@ -121,7 +131,7 @@ function neueInstanz(ref, stufeId, opt) {
     hp:     st.hp,
     max:    st.hp,
     ac:     st.ac,
-    tag:    null,
+    stift:  null,      // Punktfarbe oben auf dem Schildchen
     tot:    false,
     spaeter: opt.spaeter || null,
     notiz:  opt.notiz || '',
@@ -236,7 +246,10 @@ function baueKarte(inst, nr) {
       '<div class="hp"><span class="zahl">0</span><span class="von"></span></div>' +
       '<div class="delta"></div>' +
     '</div>' +
-    '<div class="balken"><i></i></div>';
+    '<div class="fuss-zeile">' +
+      '<span class="nodge"></span>' +
+      '<div class="balken"><i></i></div>' +
+    '</div>';
 
   const q = (s) => karte.querySelector(s);
   const ref = {
@@ -245,7 +258,8 @@ function baueKarte(inst, nr) {
     von:   q('.von'),
     delta: q('.delta'),
     bar:   q('.balken i'),
-    tag:   q('.tag')
+    tag:   q('.tag'),
+    nodge: q('.nodge')
   };
   karten.set(inst.uid, ref);
 
@@ -280,23 +294,27 @@ function baueKarte(inst, nr) {
     if (window.Initiative) Initiative.zeichne();
   };
 
-  faerbeTag(ref.tag, inst.tag, nr);
+  faerbePunkt(ref.tag, inst.stift, nr);
+  faerbeNodge(ref.nodge, standVonInstanz(inst));
   malen(inst.uid);
   return karte;
 }
 
-function faerbeTag(el, tagId, nr) {
-  const f = FARBEN.find(x => x.id === tagId);
-  el.style.background = f ? f.hex : 'transparent';
-  el.style.color = f ? (istHell(f.hex) ? '#14161a' : '#fff') : '';
-  el.classList.toggle('hat', !!f);
+// Der Punkt oben: die Stiftfarbe, die du aufs Schildchen malst.
+function faerbePunkt(el, stiftId, nr) {
+  const hex = window.Farben ? Farben.stiftHex(stiftId) : null;
+  el.style.background = hex || 'transparent';
+  el.style.color = hex ? (Farben.istHell(hex) ? '#14161a' : '#fff') : '';
+  el.classList.toggle('hat', !!hex);
   el.textContent = nr ? String(nr) : '';
 }
 
-// Auf hellen Plättchen (gelb, weiß) muss die Nummer dunkel sein.
-function istHell(hex) {
-  const n = parseInt(hex.slice(1), 16);
-  return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) > 150;
+// Der Nodge unten: die Farbe des Aufstellers, auf dem das Vieh steht.
+function faerbeNodge(el, standId) {
+  if (!el) return;
+  const hex = window.Farben ? Farben.aufstellerHex(standId) : null;
+  el.style.background = hex || 'transparent';
+  el.classList.toggle('leer', !hex);
 }
 
 /* ───────────── Eingabe ───────────── */
@@ -474,19 +492,37 @@ function kartenMenue(inst) {
       box.appendChild(n);
     }
 
-    box.appendChild(gruppe('Plättchen'));
+    // Aufsteller: ergibt sich aus der Gruppe, wird hier nur angezeigt
+    const stand = standVonInstanz(inst);
+    const zeig = document.createElement('div');
+    zeig.className = 'fb-hinweis';
+    const nod = document.createElement('span');
+    nod.className = 'nodge';
+    faerbeNodge(nod, stand);
+    zeig.appendChild(nod);
+    const wo = document.createElement('span');
+    const gr = window.Farben ? Farben.gruppen().find(g => g.id === Farben.gruppeVon(kr, inst.stufe)) : null;
+    wo.innerHTML = stand
+      ? 'Aufsteller <b>' + esc((Farben.aufstellerListe().find(a => a.id === stand) || {}).name || '') +
+        '</b> · aus ' + esc(gr ? gr.name : '—')
+      : 'Kein Aufsteller für diese Gruppe — unter ⚙ zuweisen';
+    zeig.appendChild(wo);
+    box.appendChild(zeig);
+
+    box.appendChild(gruppe('Punkt oben (Stift)'));
     const reihe = document.createElement('div');
     reihe.className = 'farben';
     const keine = document.createElement('button');
-    keine.className = 'farbe keine' + (inst.tag ? '' : ' gewaehlt');
+    keine.className = 'farbe keine' + (inst.stift ? '' : ' gewaehlt');
     keine.textContent = '✕';
-    keine.onclick = () => setzeTag(inst, null);
+    keine.onclick = () => setzeStift(inst, null);
     reihe.appendChild(keine);
-    FARBEN.forEach(f => {
+    (window.Farben ? Farben.stifte() : []).forEach(f => {
       const b = document.createElement('button');
-      b.className = 'farbe' + (inst.tag === f.id ? ' gewaehlt' : '');
+      b.className = 'farbe' + (inst.stift === f.id ? ' gewaehlt' : '');
       b.style.background = f.hex;
-      b.onclick = () => setzeTag(inst, f.id);
+      b.title = f.name;
+      b.onclick = () => setzeStift(inst, f.id);
       reihe.appendChild(b);
     });
     box.appendChild(reihe);
@@ -514,11 +550,11 @@ function kartenMenue(inst) {
   });
 }
 
-function setzeTag(inst, tagId) {
-  inst.tag = tagId;
+function setzeStift(inst, stiftId) {
+  inst.stift = stiftId;
   speichern();
   const ref = karten.get(inst.uid);
-  if (ref) faerbeTag(ref.tag, tagId, ref.nr);
+  if (ref) faerbePunkt(ref.tag, stiftId, ref.nr);
   if (window.Initiative) Initiative.zeichne();
   sheetZu();
 }
@@ -573,6 +609,7 @@ function stufenWahl(kr) {
 function lege(kr, st) {
   const inst = neueInstanz(kr.ref, st.id, { extra: true, notiz: 'nachträglich dazugeholt' });
   board().push(inst);
+  stifteVerteilen(board(), false);   // nur der Neue bekommt einen Punkt
   speichern();
   // Laeuft gerade ein Kampf, reiht er sich hinten ein
   if (window.Initiative) Initiative.anhaengen(inst.uid);
@@ -605,6 +642,41 @@ function encounterZuruecksetzen() {
    Tipp-Zaehler, nur diese Handvoll Funktionen. Umgekehrt weiss der
    HP-Zaehler vom Modul nur, dass es ein zeichne() hat. */
 
+// Das Farbmodul bekommt Zugriff auf Spieler und Stufen-Zuordnung.
+function farbenAnbinden() {
+  if (!window.Farben) return;
+  Farben.start({
+    spieler:     () => state.spieler,
+    spielerDazu: () => { state.spieler.push({ name: '', stand: null }); speichern(); },
+    spielerWeg:  (i) => { state.spieler.splice(i, 1); speichern(); aufraeumenNachSpieler(); },
+    stufen:      () => state.stufen,
+    speichern:   speichern,
+    neuzeichnen: () => { zeichne(); },
+    // Alle Punkte in allen Encountern neu vergeben
+    stifteNeu:   () => {
+      Object.keys(state.boards).forEach(id => stifteVerteilen(state.boards[id], true));
+      speichern(); zeichne();
+    },
+    sheet:       { auf: sheetAuf, zu: sheetZu }
+  }, PALETTE);
+
+  // Boards aus aelteren Staenden haben noch keine Punkte - Luecken fuellen
+  Object.keys(state.boards).forEach(id => stifteVerteilen(state.boards[id], false));
+  speichern();
+}
+
+// Faellt ein Spieler weg, verschwindet er auch aus jeder Initiative.
+function aufraeumenNachSpieler() {
+  const n = state.spieler.length;
+  Object.keys(state.initiative).forEach(id => {
+    const d = state.initiative[id];
+    d.folge = d.folge.filter(s => s.charAt(0) !== 's' || +s.slice(2) < n);
+    if (d.aktiv >= d.folge.length) d.aktiv = 0;
+  });
+  speichern();
+  if (window.Initiative) Initiative.zeichne();
+}
+
 function initiativeAnbinden() {
   if (!window.Initiative) return;
   Initiative.start({
@@ -619,15 +691,19 @@ function initiativeAnbinden() {
                     name:  kr.kurz || kr.name || e.inst.ref,
                     stufe: st && st.kurz ? st.kurz : '',
                     nr:    e.nr,
-                    tag:   e.inst.tag,
+                    hex:   window.Farben ? Farben.stiftHex(e.inst.stift) : null,
                     tot:   !!e.inst.tot || e.inst.hp <= 0
                   };
                 }),
-    spieler:    () => state.spieler,
+    // Charaktere stehen auf Aufstellern, Gegner tragen Stiftpunkte
+    spieler:    () => state.spieler.map((s, i) => ({
+                  name: s.name || ('Spieler ' + (i + 1)),
+                  benannt: !!s.name,
+                  hex: window.Farben ? Farben.aufstellerHex(s.stand) : null
+                })),
     initiative: () => state.initiative,
     speichern:  speichern,
-    farben:     FARBEN,
-    istHell:    istHell,
+    istHell:    (hex) => window.Farben ? Farben.istHell(hex) : false,
     sheet:      { auf: sheetAuf, zu: sheetZu, zeile: zeile, gruppe: gruppe }
   });
 }
