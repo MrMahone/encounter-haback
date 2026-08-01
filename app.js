@@ -54,6 +54,7 @@ const clamp = (v, lo, hi) => v < lo ? lo : v > hi ? hi : v;
 
   ladeState();
   verdrahten();
+  initiativeAnbinden();
   zeigeEncounter();
 
   if ('serviceWorker' in navigator) {
@@ -79,6 +80,11 @@ function ladeState() {
   } catch (_) {}
   if (!state) state = { v: 2, encIdx: 0, seq: 1, boards: {} };
   state.encIdx = clamp(state.encIdx | 0, 0, ENCOUNTER.length - 1);
+  // Nachtragen, was in aelteren Staenden noch fehlt
+  if (!Array.isArray(state.spieler)) {
+    state.spieler = [1, 2, 3].map(() => ({ name: '', tag: null }));
+  }
+  if (!state.initiative) state.initiative = {};
 }
 
 function speichern() {
@@ -165,6 +171,19 @@ function zeigeEncounter() {
 
 /* ───────────── Feld zeichnen ───────────── */
 
+// Laufnummer nur, wenn dieselbe Kreatur/Stufe mehrfach auf dem Feld steht.
+// Wird vom Feld und vom Initiativmodul gebraucht, deshalb hier zentral.
+function boardMitNummern() {
+  const b = board();
+  const zaehler = {}, laufend = {};
+  b.forEach(i => { const k = i.ref + '|' + i.stufe; zaehler[k] = (zaehler[k] || 0) + 1; });
+  return b.map(inst => {
+    const k = inst.ref + '|' + inst.stufe;
+    laufend[k] = (laufend[k] || 0) + 1;
+    return { inst: inst, nr: zaehler[k] > 1 ? laufend[k] : 0 };
+  });
+}
+
 function zeichne() {
   const feld = $('feld');
   feld.innerHTML = '';
@@ -174,21 +193,14 @@ function zeichne() {
   if (!b.length) {
     feld.innerHTML = '<div class="leer">Kein Gegner auf dem Feld.<br>Mit <b>+</b> oben rechts welche dazuholen.</div>';
     summe();
+    if (window.Initiative) Initiative.zeichne();
     return;
   }
 
-  // Durchnummerieren, wenn dieselbe Kreatur/Stufe mehrfach vorkommt
-  const zaehler = {};
-  b.forEach(i => { const k = i.ref + '|' + i.stufe; zaehler[k] = (zaehler[k] || 0) + 1; });
-  const laufend = {};
-
-  b.forEach(inst => {
-    const k = inst.ref + '|' + inst.stufe;
-    laufend[k] = (laufend[k] || 0) + 1;
-    feld.appendChild(baueKarte(inst, zaehler[k] > 1 ? laufend[k] : 0));
-  });
+  boardMitNummern().forEach(e => feld.appendChild(baueKarte(e.inst, e.nr)));
 
   summe();
+  if (window.Initiative) Initiative.zeichne();
 }
 
 function baueKarte(inst, nr) {
@@ -255,6 +267,7 @@ function baueKarte(inst, nr) {
     speichern();
     malen(inst.uid);
     summe();
+    if (window.Initiative) Initiative.zeichne();
   };
 
   faerbeTag(ref.tag, inst.tag, nr);
@@ -412,9 +425,10 @@ function summe() {
 
 /* ───────────── Sheet ───────────── */
 
-function sheetAuf(titel, bauen) {
+function sheetAuf(titel, bauen, breit) {
   uebernehmen();
   $('sheet-titel').textContent = titel;
+  $('sheet-box').classList.toggle('breit', !!breit);
   const inhalt = $('sheet-inhalt');
   inhalt.innerHTML = '';
   bauen(inhalt);
@@ -495,6 +509,7 @@ function setzeTag(inst, tagId) {
   speichern();
   const ref = karten.get(inst.uid);
   if (ref) faerbeTag(ref.tag, tagId, ref.nr);
+  if (window.Initiative) Initiative.zeichne();
   sheetZu();
 }
 
@@ -570,6 +585,38 @@ function encounterZuruecksetzen() {
       speichern(); sheetZu(); zeichne();
     }));
     box.appendChild(zeile('Abbrechen', null, sheetZu));
+  });
+}
+
+/* ───────────── Schnittstelle fuers Initiativmodul ─────────────
+   Absichtlich schmal: das Modul kennt weder die Kaesten noch den
+   Tipp-Zaehler, nur diese Handvoll Funktionen. Umgekehrt weiss der
+   HP-Zaehler vom Modul nur, dass es ein zeichne() hat. */
+
+function initiativeAnbinden() {
+  if (!window.Initiative) return;
+  Initiative.start({
+    encId:      () => enc().id,
+    encName:    () => (enc().nr || enc().id) + ' · ' + (enc().name || ''),
+    // Gegner des laufenden Encounters, flach und ohne Innenleben
+    gegner:     () => boardMitNummern().map(e => {
+                  const kr = KMAP[e.inst.ref] || {};
+                  const st = stufeVon(e.inst);
+                  return {
+                    uid:   e.inst.uid,
+                    name:  kr.kurz || kr.name || e.inst.ref,
+                    stufe: st && st.kurz ? st.kurz : '',
+                    nr:    e.nr,
+                    tag:   e.inst.tag,
+                    tot:   !!e.inst.tot || e.inst.hp <= 0
+                  };
+                }),
+    spieler:    () => state.spieler,
+    initiative: () => state.initiative,
+    speichern:  speichern,
+    farben:     FARBEN,
+    istHell:    istHell,
+    sheet:      { auf: sheetAuf, zu: sheetZu, zeile: zeile, gruppe: gruppe }
   });
 }
 

@@ -1,0 +1,216 @@
+/* ═══ Initiativmodul ═══ */
+
+/* ─── Fußleiste ─────────────────────────────── */
+
+#fuss {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: stretch;
+  gap: 5px;
+  padding: 6px 8px;
+  border-top: 1px solid var(--rand);
+  background: #12141a;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#fuss[hidden] { display: none; }
+
+.ini-chip {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 54px;
+  padding: 0 9px;
+  border-radius: 11px;
+  background: var(--karte);
+  border: 1px solid var(--rand);
+  transition: background .12s, border-color .12s;
+}
+.ini-chip:active { border-color: var(--rand-hell); }
+
+/* Der Rest: nur das Plättchen, sonst nichts */
+.ini-chip.klein { padding: 0 7px; opacity: .72; }
+
+/* Der Nächste: angeteasert */
+.ini-chip.naechster {
+  background: var(--karte-2);
+  border-color: var(--rand-hell);
+}
+.ini-chip.naechster .ini-txt b { font-size: 12.5px; }
+.ini-chip.naechster .ini-txt    { max-width: 92px; }
+
+/* Der Aktive: aufgeklappt */
+.ini-chip.aktiv {
+  background: var(--gelb);
+  border-color: var(--gelb);
+  color: #14161a;
+  padding: 0 13px 0 9px;
+  gap: 9px;
+}
+.ini-chip.aktiv .ini-txt b { font-size: 16px; }
+.ini-chip.aktiv .ini-txt i { color: rgba(0,0,0,.62); }
+.ini-chip.aktiv .ini-txt   { max-width: 190px; }
+
+.ini-chip.tot { opacity: .34; }
+.ini-chip.aktiv.tot { opacity: .58; }
+
+.ini-pos {
+  flex: 0 0 auto;
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  opacity: .5;
+}
+
+.ini-punkt {
+  flex: 0 0 auto;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--rand-hell);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 20px;
+  text-align: center;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+/* Charaktere klar von Gegnern unterscheidbar: Ecken statt Kreis */
+.ini-punkt.spieler { border-radius: 6px; }
+.ini-chip.aktiv .ini-punkt { border-color: rgba(0,0,0,.4); color: #14161a; }
+
+.ini-txt {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  overflow: hidden;
+}
+.ini-txt b {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ini-txt i {
+  font-style: normal;
+  font-size: 10.5px;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+/* Charaktere sind eckig, Gegner rund - auch schon in der Farbwahl. */
+.farben.spieler .farbe { border-radius: 11px; }
+
+/* ─── Popup: Aufstellung ────────────────────── */
+
+.ini-auf {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.ini-spalte { min-width: 0; }
+
+.ini-wahl, .ini-folge-zeile {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 11px;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  background: var(--karte-2);
+}
+.ini-wahl:active, .ini-folge-zeile:active { background: var(--rand); }
+.ini-wahl.drin { outline: 2px solid var(--gelb); outline-offset: -2px; }
+.ini-wahl.blass .ini-wahl-txt b { color: var(--text-2); font-weight: 400; }
+.ini-wahl.tot, .ini-folge-zeile.tot { opacity: .45; }
+
+.ini-wahl-txt {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 14.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ini-wahl-txt b { font-weight: 700; }
+.ini-wahl-txt i { font-style: normal; color: var(--gelb); font-weight: 700; font-size: 12px; }
+.ini-wahl-txt s { color: var(--rot-weich); font-size: 12px; }
+
+.ini-marke {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--gelb);
+  font-variant-numeric: tabular-nums;
+  min-width: 16px;
+  text-align: right;
+}
+.ini-folge-zeile .ini-marke { color: var(--text-2); font-weight: 400; }
+.ini-folge-zeile .ini-pos { color: var(--gelb); opacity: 1; font-size: 15px; min-width: 18px; }
+
+.ini-leer {
+  padding: 14px 12px 18px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.ini-knoepfe {
+  display: flex;
+  gap: 6px;
+  margin: 10px 0 8px;
+}
+.ini-knopf {
+  flex: 1 1 0;
+  padding: 10px 8px;
+  border-radius: 9px;
+  background: var(--karte-2);
+  color: var(--text-2);
+  font-size: 13px;
+}
+.ini-knopf:active { background: var(--rand); }
+.ini-knopf:disabled { opacity: .3; }
+
+.ini-los {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border-radius: 11px;
+  background: var(--gelb);
+  color: #14161a;
+  font-size: 16px;
+  font-weight: 800;
+}
+.ini-los:disabled { opacity: .3; }
+.ini-los.weg {
+  margin-top: 6px;
+  background: var(--karte-2);
+  color: var(--rot-weich);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.ini-eingabe {
+  display: block;
+  width: 100%;
+  padding: 12px 13px;
+  margin-bottom: 2px;
+  border: 1px solid var(--rand-hell);
+  border-radius: 10px;
+  background: var(--karte);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;   /* unter 16px zoomt iOS beim Tippen herein */
+}
+.ini-eingabe:focus { outline: 2px solid var(--gelb); outline-offset: -1px; }
+
+/* Hochkant ist die Aufstellung untereinander besser lesbar */
+@media (max-width: 720px) {
+  .ini-auf { grid-template-columns: 1fr; gap: 4px; }
+}

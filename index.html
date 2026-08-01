@@ -12,6 +12,7 @@
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="initiative.css">
 </head>
 <body>
 
@@ -27,11 +28,22 @@
   <button class="nav" id="next" aria-label="Encounter vor">›</button>
   <div class="luecke"></div>
   <div class="summe" id="summe"></div>
+  <button class="tool" id="ini" aria-label="Initiative aufstellen">
+    <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h11M4 18h6"/></svg>
+  </button>
+  <button class="tool" id="charaktere" aria-label="Charaktere">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/>
+      <path d="M12 2.6v2.2M12 19.2v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.6 12h2.2M19.2 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>
+  </button>
   <button class="tool" id="add" aria-label="Gegner hinzufügen">+</button>
   <button class="tool" id="reset" aria-label="Encounter zurücksetzen">⟳</button>
 </header>
 
 <main id="feld"></main>
+
+<footer id="fuss" hidden></footer>
 
 <div id="sheet" hidden>
   <div class="sheet-box" id="sheet-box">
@@ -43,6 +55,7 @@
   </div>
 </div>
 
+<script src="initiative.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

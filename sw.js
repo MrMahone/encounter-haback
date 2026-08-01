@@ -2,13 +2,15 @@
 
 // Name bei jeder Aenderung an den Dateien hochzaehlen - das ist das Signal,
 // an dem der Browser merkt, dass es eine neue Fassung gibt.
-const CACHE = 'ln-hp-v3';
+const CACHE = 'ln-hp-v4';
 
 const SHELL = [
   './',
   'index.html',
   'app.css',
   'app.js',
+  'initiative.css',
+  'initiative.js',
   'manifest.webmanifest',
   'data/kreaturen.json',
   'data/encounter.json',

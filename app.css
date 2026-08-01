@@ -119,6 +119,9 @@ button {
 
 #bar .tool {
   width: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 24px;
   line-height: 1;
   border-radius: 10px;
@@ -347,6 +350,7 @@ button {
 }
 #sheet[hidden] { display: none; }
 
+.sheet-box.breit { max-width: 860px; }
 .sheet-box {
   width: 100%;
   max-width: 460px;

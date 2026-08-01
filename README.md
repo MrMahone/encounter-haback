@@ -20,6 +20,33 @@ nur die Frage „wie viel hat das Ding noch".
 | **+** | Gegner dazuholen: erst Name wählen, dann Stufe |
 | **⟳** | diesen Encounter zurücksetzen (Grundbesetzung oder nur HP auffüllen) |
 
+## Initiative
+
+Zweites, eigenständiges Modul (`initiative.js` / `initiative.css`). Hängt über eine
+schmale Schnittstelle am HP-Zähler und kennt von ihm nur, welche Gegner auf dem Feld
+stehen — keine Kästen, keinen Tipp-Zähler.
+
+| Geste | Wirkung |
+|---|---|
+| **Zahnrad** in der Kopfzeile | Namen und Plättchen der drei Charaktere. Gilt für den ganzen Abend |
+| **Listen-Icon** in der Kopfzeile | Aufstellung öffnen |
+| in der Aufstellung antippen | hängt an die Reihenfolge an — rechts entsteht sie live mit |
+| nochmal antippen | nimmt wieder raus, der Rest rutscht auf |
+| **Kampf starten** | Fußleiste erscheint |
+| unten einen antippen | der ist dran. Alle anderen werden wieder kompakt |
+
+In der Fußleiste ist immer genau einer **aktiv** (breit, mit Position und Namen), der
+**nächste** wird angeteasert, alle übrigen stehen kompakt daneben — sie passen in eine
+Reihe, auch bei zwölf Beteiligten. Nach dem Letzten tippt man wieder vorne an; es gibt
+keine Runden- oder Zurück-Knöpfe, weil alles über Antippen geht.
+
+Gegner sind runde Plättchen mit ihrer Laufnummer, Charaktere eckige. Wird ein Kasten auf
+TOT gesetzt, wird sein Eintrag ausgegraut — verschwindet aber nicht, denn geklickt wird
+weiter von Hand. Entfernte Gegner fallen automatisch aus der Reihenfolge.
+
+Jeder Encounter hat seine eigene Initiative. Ein Wechsel lässt sie stehen; man kommt
+zurück und der Kampf ist noch da. **Initiative beenden** in der Aufstellung räumt sie weg.
+
 Der Stand wird laufend im Browser gespeichert. Reload oder App-Wechsel mitten im Kampf
 verliert nichts. Solange die App offen ist, wird der Bildschirm wach gehalten
 (Safari 16.4+).
@@ -83,11 +110,17 @@ gibt. Zeigt sie trotzdem noch die alte Fassung: einmal mehr neu starten.
 
 ```
 index.html                  Gerüst
-app.css                     Darstellung
-app.js                      die ganze Logik (kein Build, keine Abhängigkeiten)
+app.css / app.js            HP-Zähler: Kästen, Tipp-Zähler, Encounter, Daten, Speichern
+initiative.css / .js        Initiativmodul: Aufstellung und Fußleiste
 sw.js                       Service Worker: Offline-Cache, JSONs immer erst aus dem Netz
 manifest.webmanifest        PWA-Anmeldung
 data/kreaturen.json         Katalog
 data/encounter.json         Besetzungen
 icons/                      App-Icons
+serve.py                    lokaler Server mit richtigen MIME-Typen
 ```
+
+Die zwei Module sind absichtlich getrennt. Der HP-Zähler reicht dem Initiativmodul in
+`initiativeAnbinden()` eine Handvoll Funktionen (welche Gegner, welche Spieler, speichern,
+Popup öffnen) und weiß von ihm nur, dass es ein `zeichne()` hat. Ein drittes Modul kommt
+genauso dazu: Knopf ins `index.html`, eigene Datei, an die Schnittstelle hängen.
