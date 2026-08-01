@@ -143,8 +143,8 @@ button {
   -webkit-overflow-scrolling: touch;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
-  gap: 8px;
-  padding: 8px;
+  gap: 18px 8px;          /* mehr Luft nach unten: da steht der Nodge raus */
+  padding: 8px 8px 16px;
   align-content: start;
 }
 
@@ -180,13 +180,21 @@ button {
 
 /* ─── Karte ─────────────────────────────────── */
 
+/* Der Wrapper ist das Gitterelement. Er darf ueberlaufen, damit der Nodge
+   unten herausstehen kann; die Karte selbst schneidet weiter sauber ab. */
+.kasten {
+  position: relative;
+  min-height: 200px;
+  display: flex;
+}
+
 .karte {
   position: relative;
+  flex: 1 1 auto;
   background: var(--karte);
   border: 1px solid var(--rand);
   border-radius: 14px;
   overflow: hidden;
-  min-height: 200px;
   display: flex;
   flex-direction: column;
   transition: opacity .15s, border-color .15s;
@@ -344,12 +352,11 @@ button {
 .delta.zu { background: var(--gruen); }
 
 /* Fuß */
-/* Eingerückt, damit die Enden nicht in die runden Ecken laufen. */
+/* Volle Breite am unteren Rand, mit Luft fuer den Nodge darunter. */
 .balken {
-  height: 4px;
+  height: 7px;
   flex: 0 0 auto;
-  margin: 0 10px 9px;
-  border-radius: 2px;
+  margin: 0 0 11px;
   overflow: hidden;
   background: var(--rand);
 }

@@ -246,10 +246,16 @@ function baueKarte(inst, nr) {
       '<div class="hp"><span class="zahl">0</span><span class="von"></span></div>' +
       '<div class="delta"></div>' +
     '</div>' +
-    '<div class="fuss-zeile">' +
-      '<span class="nodge"></span>' +
-      '<div class="balken"><i></i></div>' +
-    '</div>';
+    '<div class="balken"><i></i></div>';
+
+  // Der Nodge sitzt AUSSERHALB der Karte, sonst wuerde deren overflow:hidden
+  // ihn abschneiden - er soll ja unten herausstehen wie der echte Staender.
+  const kasten = document.createElement('div');
+  kasten.className = 'kasten';
+  kasten.appendChild(karte);
+  const nodge = document.createElement('span');
+  nodge.className = 'nodge';
+  kasten.appendChild(nodge);
 
   const q = (s) => karte.querySelector(s);
   const ref = {
@@ -259,7 +265,7 @@ function baueKarte(inst, nr) {
     delta: q('.delta'),
     bar:   q('.balken i'),
     tag:   q('.tag'),
-    nodge: q('.nodge')
+    nodge: nodge
   };
   karten.set(inst.uid, ref);
 
@@ -297,7 +303,7 @@ function baueKarte(inst, nr) {
   faerbePunkt(ref.tag, inst.stift, nr);
   faerbeNodge(ref.nodge, standVonInstanz(inst));
   malen(inst.uid);
-  return karte;
+  return kasten;
 }
 
 // Der Punkt oben: die Stiftfarbe, die du aufs Schildchen malst.
