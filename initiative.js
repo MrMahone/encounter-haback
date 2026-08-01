@@ -153,6 +153,22 @@ window.Initiative = (function () {
     return s;
   }
 
+  /* ── Nachzügler ──
+     Kommt mitten im Kampf ein Gegner dazu, haengt er hinten an. Laeuft
+     gerade kein Kampf, passiert nichts - dann stellt man ohnehin neu auf.
+     Verschieben geht danach in der Aufstellung. */
+
+  function anhaengen(uid) {
+    if (!A) return;
+    const d = daten();
+    if (!d.folge.length) return;
+    const schluessel = 'g:' + uid;
+    if (d.folge.indexOf(schluessel) >= 0) return;
+    d.folge.push(schluessel);
+    A.speichern();
+    zeichne();
+  }
+
   /* ── Rundenzähler: rein manuell ── */
 
   function runde(d) {
@@ -467,5 +483,5 @@ window.Initiative = (function () {
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
-  return { start: start, zeichne: zeichne };
+  return { start: start, zeichne: zeichne, anhaengen: anhaengen };
 })();

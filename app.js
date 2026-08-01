@@ -574,6 +574,8 @@ function lege(kr, st) {
   const inst = neueInstanz(kr.ref, st.id, { extra: true, notiz: 'nachträglich dazugeholt' });
   board().push(inst);
   speichern();
+  // Laeuft gerade ein Kampf, reiht er sich hinten ein
+  if (window.Initiative) Initiative.anhaengen(inst.uid);
   sheetZu();
   zeichne();
   const ref = karten.get(inst.uid);

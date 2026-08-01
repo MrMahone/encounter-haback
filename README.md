@@ -53,6 +53,10 @@ mit, damit man auch über eine lange Reihenfolge hinweg umsortieren kann.
 
 Gegner sind runde Plättchen mit ihrer Laufnummer, Charaktere eckige.
 
+**Wer mitten im Kampf über das + dazukommt, reiht sich hinten ein** — und lässt sich in
+der Aufstellung am Griff nach vorne ziehen. Läuft gerade kein Kampf, passiert nichts;
+dann stellt man ja ohnehin neu auf.
+
 **TOT auf einem Kasten nimmt ihn aus der Leiste.** Nicht aus der gespeicherten
 Reihenfolge — wer wiederbelebt wird, steht wieder an seiner alten Stelle. Die übrigen
 werden dabei neu durchnummeriert, damit die Zahlen zu dem passen, was man sieht. Stirbt
