@@ -14,7 +14,8 @@ window.Initiative = (function () {
 
   let A = null;           // Schnittstelle zur App
   let aufstellung = [];   // Arbeitskopie im Popup
-  let malenAuf = null;    // Neuzeichnen der beiden Popup-Spalten
+  let malenAuf = null;    // Aktualisieren der beiden Popup-Spalten
+  let wahlZeilen = [];    // die Zeilen der linken Spalte, bleiben stehen
 
   const klemm = (v, lo, hi) => v < lo ? lo : v > hi ? hi : v;
 
@@ -195,13 +196,19 @@ window.Initiative = (function () {
       raster.appendChild(folge);
       box.appendChild(raster);
 
-      malenAuf = () => { maleWahl(wahl); maleFolge(folge); };
+      // Die linke Spalte wird EINMAL gebaut und danach nur noch aktualisiert.
+      // Wuerde sie bei jedem Tipp neu entstehen, verschwaende der Knopf unter
+      // dem Finger - auf iOS kommt der synthetische click dann nicht mehr an
+      // und jeder zweite schnelle Tipp geht verloren.
+      maleWahl(wahl);
+      malenAuf = () => { frischeMarken(); maleFolge(folge); };
       malenAuf();
     }, true);
   }
 
   function maleWahl(spalte) {
     spalte.innerHTML = '';
+    wahlZeilen = [];
     spalte.appendChild(A.sheet.gruppe('Gegner — in Reihenfolge antippen'));
 
     const gegner = A.gegner();
@@ -225,9 +232,8 @@ window.Initiative = (function () {
   }
 
   function wahlzeile(schluessel, e) {
-    const platz = aufstellung.indexOf(schluessel);
     const b = document.createElement('button');
-    b.className = 'ini-wahl' + (platz >= 0 ? ' drin' : '') + (e.blass ? ' blass' : '');
+    b.className = 'ini-wahl' + (e.blass ? ' blass' : '');
     b.appendChild(punkt(e));
 
     const txt = document.createElement('span');
@@ -238,15 +244,28 @@ window.Initiative = (function () {
 
     const marke = document.createElement('span');
     marke.className = 'ini-marke';
-    marke.textContent = platz >= 0 ? (platz + 1) + '.' : '';
     b.appendChild(marke);
 
+    // Der Platz wird beim Tippen frisch nachgesehen, nicht beim Bauen
+    // gemerkt - die Zeile lebt jetzt laenger als eine Aenderung.
     b.onclick = () => {
+      const platz = aufstellung.indexOf(schluessel);
       if (platz >= 0) aufstellung.splice(platz, 1);
       else aufstellung.push(schluessel);
       malenAuf();
     };
+
+    wahlZeilen.push({ schluessel: schluessel, el: b, marke: marke });
     return b;
+  }
+
+  // Nur Rahmen und Platznummer nachziehen, kein Element wird ersetzt.
+  function frischeMarken() {
+    wahlZeilen.forEach(w => {
+      const platz = aufstellung.indexOf(w.schluessel);
+      w.el.classList.toggle('drin', platz >= 0);
+      w.marke.textContent = platz >= 0 ? (platz + 1) + '.' : '';
+    });
   }
 
   function maleFolge(spalte) {

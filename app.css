@@ -405,10 +405,13 @@ button {
   color: var(--text-2);
   font-size: 15px;
 }
+/* Bewusst OHNE -webkit-overflow-scrolling: touch. Der Beschleunigungs-Scroller
+   von iOS legt einen eigenen Compositing-Layer an, und wenn sich der Inhalt
+   darin aendert, bleiben Trefferflaechen dort schon mal an der alten Stelle
+   stehen. Modernes iOS scrollt ohnehin von sich aus geschmeidig. */
 #sheet-inhalt {
   overflow-y: auto;
   padding: 10px;
-  -webkit-overflow-scrolling: touch;
 }
 
 .zeile {

@@ -199,20 +199,23 @@
   background: var(--karte-2);
 }
 .ini-wahl:active { background: var(--rand); }
-.ini-folge-zeile { padding: 9px 4px 9px 5px; }   /* ✕ links, Griff rechts */
+.ini-folge-zeile { padding: 6px 4px 6px 4px; gap: 7px; }   /* ✕ links, Griff rechts */
 
 /* ─── Verschieben ───────────────────────────── */
 
 .ini-liste { position: relative; }
 
+/* Beide Knoepfe bewusst breit und ueber die ganze Zeilenhoehe - auf dem
+   Tablet trifft man 30 px zu oft daneben. */
 .ini-griff {
   flex: 0 0 auto;
-  width: 30px;
+  width: 40px;
   align-self: stretch;
+  min-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 7px;
+  border-radius: 8px;
   color: var(--rand-hell);
   touch-action: none;      /* halten und ziehen, nicht scrollen */
 }
@@ -229,9 +232,11 @@
 
 .ini-weg {
   flex: 0 0 auto;
-  width: 30px; height: 30px;
+  width: 40px;
+  align-self: stretch;
+  min-height: 40px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-2);
 }
 .ini-weg:active { background: var(--rand-hell); color: var(--text); }
