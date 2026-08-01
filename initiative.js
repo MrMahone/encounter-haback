@@ -268,15 +268,14 @@ window.Initiative = (function () {
       const z = document.createElement('div');
       z.className = 'ini-folge-zeile' + (e.tot ? ' tot' : '');
 
-      const griff = document.createElement('button');
-      griff.className = 'ini-griff';
-      griff.setAttribute('aria-label', 'verschieben');
-      griff.innerHTML = '<svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">' +
-        '<circle cx="5" cy="3" r="1.4"/><circle cx="11" cy="3" r="1.4"/>' +
-        '<circle cx="5" cy="8" r="1.4"/><circle cx="11" cy="8" r="1.4"/>' +
-        '<circle cx="5" cy="13" r="1.4"/><circle cx="11" cy="13" r="1.4"/></svg>';
-      griff.addEventListener('pointerdown', (ev) => ziehStart(ev, i, z, liste));
-      z.appendChild(griff);
+      // Reihenfolge auf der Zeile: ✕ links, Griff rechts. Auf dem Tablet
+      // liegt die Greifhand rechts, und so verwechselt man die zwei nicht.
+      const weg = document.createElement('button');
+      weg.className = 'ini-weg';
+      weg.setAttribute('aria-label', 'aus der Reihenfolge nehmen');
+      weg.textContent = '✕';
+      weg.onclick = () => { aufstellung.splice(i, 1); malenAuf(); };
+      z.appendChild(weg);
 
       z.appendChild(zahl(i + 1));
       z.appendChild(punkt(e));
@@ -286,12 +285,15 @@ window.Initiative = (function () {
       txt.innerHTML = '<b>' + esc(e.name) + '</b>' + (e.stufe ? ' <i>' + esc(e.stufe) + '</i>' : '');
       z.appendChild(txt);
 
-      const weg = document.createElement('button');
-      weg.className = 'ini-weg';
-      weg.setAttribute('aria-label', 'aus der Reihenfolge nehmen');
-      weg.textContent = '✕';
-      weg.onclick = () => { aufstellung.splice(i, 1); malenAuf(); };
-      z.appendChild(weg);
+      const griff = document.createElement('button');
+      griff.className = 'ini-griff';
+      griff.setAttribute('aria-label', 'verschieben');
+      griff.innerHTML = '<svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">' +
+        '<circle cx="5" cy="3" r="1.4"/><circle cx="11" cy="3" r="1.4"/>' +
+        '<circle cx="5" cy="8" r="1.4"/><circle cx="11" cy="8" r="1.4"/>' +
+        '<circle cx="5" cy="13" r="1.4"/><circle cx="11" cy="13" r="1.4"/></svg>';
+      griff.addEventListener('pointerdown', (ev) => ziehStart(ev, i, z, liste));
+      z.appendChild(griff);
 
       liste.appendChild(z);
     });

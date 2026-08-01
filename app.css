@@ -24,6 +24,11 @@ html, body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   -webkit-text-size-adjust: 100%;
   overscroll-behavior: none;
+  /* Schaltet Doppeltipp-zum-Zoomen ab. Ohne das zoomt Safari beim schnellen
+     Doppeltippen kurz herein, das Layout springt und die Adressleiste klappt
+     auf. Wischen und Aufziehen bleiben erlaubt; touch-action der Kinder
+     (pan-y auf den Tippflaechen, none am Griff) gilt weiter. */
+  touch-action: manipulation;
 }
 
 body {

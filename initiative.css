@@ -199,7 +199,7 @@
   background: var(--karte-2);
 }
 .ini-wahl:active { background: var(--rand); }
-.ini-folge-zeile { padding-left: 4px; }
+.ini-folge-zeile { padding: 9px 4px 9px 5px; }   /* ✕ links, Griff rechts */
 
 /* ─── Verschieben ───────────────────────────── */
 
