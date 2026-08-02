@@ -14,6 +14,7 @@ const SCROLL_PX = 22;     // ab dieser Fingerbewegung gilt es als Scrollen, nich
 let KREATUREN = [];       // Katalog
 let KMAP = {};            // ref -> Kreatur
 let ENCOUNTER = [];       // Liste
+let KAMPAGNEN = [];       // Abende; leer = alles in einer Liste wie frueher
 let PALETTE = null;       // data/farben.json
 let state = null;         // { v, encIdx, seq, boards }
 let p = null;             // laufende Eingabe
@@ -34,6 +35,7 @@ const clamp = (v, lo, hi) => v < lo ? lo : v > hi ? hi : v;
     KREATUREN = k.kreaturen;
     KREATUREN.forEach(kr => KMAP[kr.ref] = kr);
     ENCOUNTER = e.encounters;
+    KAMPAGNEN = e.kampagnen || [];
     PALETTE = f;
   } catch (err) {
     $('feld').innerHTML = '<div class="leer">Daten konnten nicht geladen werden.<br>' +
@@ -83,6 +85,16 @@ function ladeState() {
   if (!state.initiative) state.initiative = {};
   // Begleiter: Kaesten, die nicht zum Encounter gehoeren, sondern mitlaufen
   if (!Array.isArray(state.begleiter)) state.begleiter = [];
+  // Kampagne: aeltere Staende bleiben, wo sie waren - abgeleitet vom Encounter
+  if (KAMPAGNEN.length) {
+    if (!state.kampagne || !KAMPAGNEN.some(k => k.id === state.kampagne)) {
+      state.kampagne = enc().kampagne || KAMPAGNEN[0].id;
+    }
+    if (enc().kampagne && enc().kampagne !== state.kampagne) {
+      const erste = ENCOUNTER.findIndex(x => x.kampagne === state.kampagne);
+      if (erste >= 0) state.encIdx = erste;
+    }
+  }
   if (!state.stufen) {
     state.stufen = {};
     (PALETTE.gruppen || []).forEach(g => { state.stufen[g.id] = g.standard || null; });
@@ -94,6 +106,14 @@ function speichern() {
 }
 
 function enc()   { return ENCOUNTER[state.encIdx]; }
+
+// Indizes der Encounter, die zur gewaehlten Kampagne gehoeren.
+// Ohne Kampagnen in den Daten: alle, wie frueher.
+function kampagnenEncounter() {
+  const alle = ENCOUNTER.map((e, i) => i);
+  if (!KAMPAGNEN.length) return alle;
+  return alle.filter(i => ENCOUNTER[i].kampagne === state.kampagne);
+}
 function board() {
   const id = enc().id;
   if (!state.boards[id]) state.boards[id] = baueBoard(enc());
@@ -167,7 +187,9 @@ function verdrahten() {
 
 function blaettern(d) {
   uebernehmen();
-  state.encIdx = clamp(state.encIdx + d, 0, ENCOUNTER.length - 1);
+  const liste = kampagnenEncounter();
+  const pos = liste.indexOf(state.encIdx);
+  state.encIdx = liste[clamp((pos < 0 ? 0 : pos) + d, 0, liste.length - 1)];
   speichern();
   zeigeEncounter();
 }
@@ -177,8 +199,10 @@ function zeigeEncounter() {
   $('t-nr').textContent    = e.nr || e.id;
   $('t-name').textContent  = e.name || '';
   $('t-szene').textContent = [e.szene, e.funktion].filter(Boolean).join(' · ');
-  $('prev').disabled = state.encIdx === 0;
-  $('next').disabled = state.encIdx === ENCOUNTER.length - 1;
+  const liste = kampagnenEncounter();
+  const pos = liste.indexOf(state.encIdx);
+  $('prev').disabled = pos <= 0;
+  $('next').disabled = pos < 0 || pos >= liste.length - 1;
   zeichne();
 }
 
@@ -592,7 +616,22 @@ function setzeStift(inst, stiftId) {
 
 function encounterListe() {
   sheetAuf('Encounter', (box) => {
-    ENCOUNTER.forEach((e, idx) => {
+    // Oben die Kampagne waehlen - die Liste darunter zeigt nur deren Encounter.
+    if (KAMPAGNEN.length > 1) {
+      const leiste = document.createElement('div');
+      leiste.className = 'fb-reiter';
+      KAMPAGNEN.forEach(k => {
+        const b = document.createElement('button');
+        b.className = 'fb-reiter-knopf' + (state.kampagne === k.id ? ' an' : '');
+        b.textContent = k.name;
+        b.onclick = () => kampagneWaehlen(k.id);
+        leiste.appendChild(b);
+      });
+      box.appendChild(leiste);
+    }
+
+    kampagnenEncounter().forEach(idx => {
+      const e = ENCOUNTER[idx];
       const b = state.boards[e.id];
       let stand = e.funktion || '';
       if (b) {
@@ -612,11 +651,27 @@ function encounterListe() {
   });
 }
 
+// Kampagne umschalten: Liste im Sheet neu, aktiver Encounter springt in
+// die Kampagne (auf den ersten), falls er nicht dazugehoert.
+function kampagneWaehlen(id) {
+  if (state.kampagne === id) return;
+  state.kampagne = id;
+  if (enc().kampagne !== id) {
+    const erste = ENCOUNTER.findIndex(x => x.kampagne === id);
+    if (erste >= 0) state.encIdx = erste;
+  }
+  speichern();
+  zeigeEncounter();
+  encounterListe();
+}
+
 /* ─── Gegner hinzufügen ─── */
 
 function gegnerHinzufuegen() {
   sheetAuf('Wer kommt dazu?', (box) => {
-    KREATUREN.forEach(kr => {
+    // Nur die Kreaturen der gewaehlten Kampagne anbieten
+    KREATUREN.filter(kr => !KAMPAGNEN.length || !kr.kampagne || kr.kampagne === state.kampagne)
+    .forEach(kr => {
       box.appendChild(zeile(kr.name, kr.stufen.length > 1
         ? kr.stufen.length + ' Stufen'
         : kr.stufen[0].hp + ' HP · AC ' + kr.stufen[0].ac,

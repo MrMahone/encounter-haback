@@ -3,18 +3,25 @@
     "titel": "Encounter-Liste - Die letzte Nacht",
     "zweck": "Wer steht wo auf dem Feld. Reihenfolge = Reihenfolge der Vor-/Zurueck-Knoepfe.",
     "quelle": "prep/block-encounter.html und gegner/gegner-tierlist.md (Abschnitt 7); M1-M3 aus kampagnen/weidenbach/app/data/krypta.json",
-    "stand": "2026-08-01",
+    "stand": "2026-08-02",
     "felder": {
       "ref": "zeigt auf kreaturen.json -> kreaturen[].ref",
+      "kampagne": "zeigt auf kampagnen[].id - steuert, welche Liste die App zeigt",
       "stufe": "zeigt auf kreaturen[].stufen[].id",
       "anzahl": "wie viele Kaesten angelegt werden",
       "spaeter": "optional; Text wie 'ab Rd. 1'. Der Kasten wird gestrichelt gezeichnet, zaehlt aber normal.",
       "notiz": "Merkzettel. Steht NICHT auf dem Kasten - der zeigt nur die Lebenszahl -, sondern im Plaettchen-Menue."
     }
   },
+  "kampagnen": [
+    { "id": "letzte-nacht", "name": "Die letzte Nacht" },
+    { "id": "weidenbach",  "name": "Die Krypta von Weidenbach" }
+  ],
+
   "encounters": [
     {
       "id": "E1",
+      "kampagne": "letzte-nacht",
       "nr": "E1",
       "szene": "Szene 1 · Krisensitzung",
       "name": "Der Gang",
@@ -26,6 +33,7 @@
     },
     {
       "id": "E2",
+      "kampagne": "letzte-nacht",
       "nr": "E2",
       "szene": "Szene 2 · Die Gasse",
       "name": "Der Hinterhalt",
@@ -37,6 +45,7 @@
     },
     {
       "id": "E3",
+      "kampagne": "letzte-nacht",
       "nr": "E3",
       "szene": "Szene 3 · Der Markt",
       "name": "Die Evakuierung",
@@ -50,6 +59,7 @@
     },
     {
       "id": "E4",
+      "kampagne": "letzte-nacht",
       "nr": "E4",
       "szene": "Szene 4.5 · Maschinenebene",
       "name": "Das Wartungskonstrukt",
@@ -60,6 +70,7 @@
     },
     {
       "id": "E5",
+      "kampagne": "letzte-nacht",
       "nr": "E5",
       "szene": "Szene 5 · Die Werkhalle",
       "name": "Der Mörser",
@@ -72,6 +83,7 @@
     },
     {
       "id": "E6",
+      "kampagne": "letzte-nacht",
       "nr": "E6",
       "szene": "Szene 6 · Ankerkammer",
       "name": "Das Nest an der Ader",
@@ -83,6 +95,7 @@
     },
     {
       "id": "E7",
+      "kampagne": "letzte-nacht",
       "nr": "E7",
       "szene": "Szene 6 · Ankerkammer",
       "name": "Der Durchbruch",
@@ -94,6 +107,7 @@
     },
     {
       "id": "E8",
+      "kampagne": "letzte-nacht",
       "nr": "E8",
       "szene": "Szene 6 · Das Finale",
       "name": "Die Brutmutter",
@@ -105,6 +119,7 @@
     },
     {
       "id": "M1",
+      "kampagne": "weidenbach",
       "nr": "M1",
       "szene": "Krypta · Raum 1 — Der Abgang",
       "name": "Die leeren Nischen",
@@ -115,6 +130,7 @@
     },
     {
       "id": "M2",
+      "kampagne": "weidenbach",
       "nr": "M2",
       "szene": "Krypta · Raum 2 — Die Halle der Särge",
       "name": "Was aus dem Sarg kam",
@@ -127,6 +143,7 @@
     },
     {
       "id": "M3",
+      "kampagne": "weidenbach",
       "nr": "M3",
       "szene": "Krypta · Raum 3 — Die Weihekammer",
       "name": "Der Wächter des Erlöschens",

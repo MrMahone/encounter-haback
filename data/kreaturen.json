@@ -3,12 +3,13 @@
     "titel": "Kreaturen-Katalog - Die letzte Nacht",
     "zweck": "Nur was der HP-Zaehler braucht: Name, Stufen, AC, HP. Keine Statblocks.",
     "quelle": "gegner/gegner.json aus dem Kampagnen-Repo; Krypta-Kreaturen aus kampagnen/weidenbach/app/data/krypta.json",
-    "stand": "2026-08-01",
+    "stand": "2026-08-02",
     "hinweis": "AC und HP hier aendern = neue Kreaturen bekommen die neuen Werte. Laufende Encounter im Browser behalten ihre Werte, bis du sie zuruecksetzt."
   },
   "kreaturen": [
     {
       "ref": "himmelsschwaermer",
+      "kampagne": "letzte-nacht",
       "name": "Himmelsschwärmer",
       "kurz": "Schwärmer",
       "gruppe": "brut",
@@ -20,6 +21,7 @@
     },
     {
       "ref": "spucker",
+      "kampagne": "letzte-nacht",
       "name": "Spucker",
       "kurz": "Spucker",
       "gruppe": "brut",
@@ -31,6 +33,7 @@
     },
     {
       "ref": "krabbler",
+      "kampagne": "letzte-nacht",
       "name": "Krabbler",
       "kurz": "Krabbler",
       "gruppe": "brut",
@@ -42,6 +45,7 @@
     },
     {
       "ref": "kreischer",
+      "kampagne": "letzte-nacht",
       "name": "Kreischer",
       "kurz": "Kreischer",
       "gruppe": "brut",
@@ -53,6 +57,7 @@
     },
     {
       "ref": "traeger",
+      "kampagne": "letzte-nacht",
       "name": "Der Träger",
       "kurz": "Träger",
       "gruppe": "sonder",
@@ -62,6 +67,7 @@
     },
     {
       "ref": "brecher",
+      "kampagne": "letzte-nacht",
       "name": "Der Brecher",
       "kurz": "Brecher",
       "gruppe": "brut",
@@ -73,6 +79,7 @@
     },
     {
       "ref": "wartungskonstrukt",
+      "kampagne": "letzte-nacht",
       "name": "Wartungskonstrukt",
       "kurz": "Konstrukt",
       "gruppe": "sonder",
@@ -82,6 +89,7 @@
     },
     {
       "ref": "brutmutter",
+      "kampagne": "letzte-nacht",
       "name": "Die Brutmutter",
       "kurz": "Brutmutter",
       "gruppe": "boss",
@@ -93,7 +101,8 @@
     },
     {
       "ref": "modergebeine",
-      "name": "Modergebeine (Krypta)",
+      "kampagne": "weidenbach",
+      "name": "Modergebeine",
       "kurz": "Gebein",
       "gruppe": "sonder",
       "stufen": [
@@ -102,7 +111,8 @@
     },
     {
       "ref": "gruftschlurfer",
-      "name": "Gruftschlurfer (Krypta)",
+      "kampagne": "weidenbach",
+      "name": "Gruftschlurfer",
       "kurz": "Schlurfer",
       "gruppe": "sonder",
       "stufen": [
@@ -111,7 +121,8 @@
     },
     {
       "ref": "grablicht",
-      "name": "Grablicht (Krypta)",
+      "kampagne": "weidenbach",
+      "name": "Grablicht",
       "kurz": "Licht",
       "gruppe": "sonder",
       "stufen": [
@@ -120,7 +131,8 @@
     },
     {
       "ref": "gruftvogt",
-      "name": "Der Gruftvogt (Krypta)",
+      "kampagne": "weidenbach",
+      "name": "Der Gruftvogt",
       "kurz": "Vogt",
       "gruppe": "boss",
       "stufen": [
