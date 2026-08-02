@@ -2,8 +2,8 @@
   "meta": {
     "titel": "Kreaturen-Katalog - Die letzte Nacht",
     "zweck": "Nur was der HP-Zaehler braucht: Name, Stufen, AC, HP. Keine Statblocks.",
-    "quelle": "gegner/gegner.json aus dem Kampagnen-Repo",
-    "stand": "2026-07-31",
+    "quelle": "gegner/gegner.json aus dem Kampagnen-Repo; Krypta-Kreaturen aus kampagnen/weidenbach/app/data/krypta.json",
+    "stand": "2026-08-01",
     "hinweis": "AC und HP hier aendern = neue Kreaturen bekommen die neuen Werte. Laufende Encounter im Browser behalten ihre Werte, bis du sie zuruecksetzt."
   },
   "kreaturen": [
@@ -89,6 +89,42 @@
         { "id": "leiter110", "label": "110 HP · E6 dauerte 4+ Runden", "kurz": "", "ac": 14, "hp": 110 },
         { "id": "leiter125", "label": "125 HP · E6 dauerte 3 Runden", "kurz": "", "ac": 15, "hp": 125 },
         { "id": "leiter135", "label": "135 HP · E6 dauerte ≤ 2 Runden", "kurz": "", "ac": 16, "hp": 135 }
+      ]
+    },
+    {
+      "ref": "modergebeine",
+      "name": "Modergebeine (Krypta)",
+      "kurz": "Gebein",
+      "gruppe": "sonder",
+      "stufen": [
+        { "id": "standard", "label": "Standard · Wucht zählt doppelt", "kurz": "", "ac": 12, "hp": 13 }
+      ]
+    },
+    {
+      "ref": "gruftschlurfer",
+      "name": "Gruftschlurfer (Krypta)",
+      "kurz": "Schlurfer",
+      "gruppe": "sonder",
+      "stufen": [
+        { "id": "standard", "label": "Standard · Modergriff (2 Treffer = gepackt)", "kurz": "", "ac": 13, "hp": 26 }
+      ]
+    },
+    {
+      "ref": "grablicht",
+      "name": "Grablicht (Krypta)",
+      "kurz": "Licht",
+      "gruppe": "sonder",
+      "stufen": [
+        { "id": "standard", "label": "Standard · schwebt, Fernkampf 30 ft", "kurz": "", "ac": 13, "hp": 9 }
+      ]
+    },
+    {
+      "ref": "gruftvogt",
+      "name": "Der Gruftvogt (Krypta)",
+      "kurz": "Vogt",
+      "gruppe": "boss",
+      "stufen": [
+        { "id": "standard", "label": "Der Wächter · Grabkälte 1× unter 26 HP", "kurz": "", "ac": 16, "hp": 52 }
       ]
     }
   ]

@@ -2,8 +2,8 @@
   "meta": {
     "titel": "Encounter-Liste - Die letzte Nacht",
     "zweck": "Wer steht wo auf dem Feld. Reihenfolge = Reihenfolge der Vor-/Zurueck-Knoepfe.",
-    "quelle": "prep/block-encounter.html und gegner/gegner-tierlist.md (Abschnitt 7)",
-    "stand": "2026-07-31",
+    "quelle": "prep/block-encounter.html und gegner/gegner-tierlist.md (Abschnitt 7); M1-M3 aus kampagnen/weidenbach/app/data/krypta.json",
+    "stand": "2026-08-01",
     "felder": {
       "ref": "zeigt auf kreaturen.json -> kreaturen[].ref",
       "stufe": "zeigt auf kreaturen[].stufen[].id",
@@ -101,6 +101,39 @@
       "gegner": [
         { "ref": "brutmutter", "stufe": "leiter125", "anzahl": 1, "notiz": "HP-Leiter nach E6: ≤2 Rd → 135 · 3 Rd → 125 · 4+ Rd → 110 (Stufe im Kasten-Menü umstellen)" },
         { "ref": "himmelsschwaermer", "stufe": "t1", "anzahl": 8, "spaeter": "Warteschlange", "notiz": "draußen · max. 2 gleichzeitig auf dem Feld · +1 je Montage-Fehlschlag" }
+      ]
+    },
+    {
+      "id": "M1",
+      "nr": "M1",
+      "szene": "Krypta · Raum 1 — Der Abgang",
+      "name": "Die leeren Nischen",
+      "funktion": "Mini-Dungeon Weidenbach · leicht · ~2 Runden",
+      "gegner": [
+        { "ref": "modergebeine", "stufe": "standard", "anzahl": 3, "notiz": "aus den Nischen · Wucht zählt doppelt (Streitkolben!)" }
+      ]
+    },
+    {
+      "id": "M2",
+      "nr": "M2",
+      "szene": "Krypta · Raum 2 — Die Halle der Särge",
+      "name": "Was aus dem Sarg kam",
+      "funktion": "Mini-Dungeon Weidenbach · mittel · ~3 Runden",
+      "gegner": [
+        { "ref": "gruftschlurfer", "stufe": "standard", "anzahl": 1, "notiz": "Modergriff: beide Krallen treffen → gepackt (STR DC 12 oder Verbündeter zieht frei)" },
+        { "ref": "modergebeine", "stufe": "standard", "anzahl": 2, "notiz": "hinter der westlichen Sargreihe" },
+        { "ref": "grablicht", "stufe": "standard", "anzahl": 1, "notiz": "schwebt · hält 30 ft Abstand · +5, 1W8 Kälte" }
+      ]
+    },
+    {
+      "id": "M3",
+      "nr": "M3",
+      "szene": "Krypta · Raum 3 — Die Weihekammer",
+      "name": "Der Wächter des Erlöschens",
+      "funktion": "Mini-Dungeon Weidenbach · mittel-schwer · ~4 Runden",
+      "gegner": [
+        { "ref": "gruftvogt", "stufe": "standard", "anzahl": 1, "notiz": "2× +6, 1W10+3 · Grabkälte 1× unter 26 HP (CON DC 13, 2W6) · Amulett" },
+        { "ref": "modergebeine", "stufe": "standard", "anzahl": 2, "spaeter": "Totenruf Rd. 2", "notiz": "brechen zu Beginn seiner 2. Runde aus den Wandnischen" }
       ]
     }
   ]
