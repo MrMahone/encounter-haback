@@ -471,8 +471,51 @@ button {
   font-size: 18px;
 }
 
+/* ─── Begleiter-Zone ───────────────────────────
+   Der Extrarahmen unter den Gegnern: Kaesten, die nicht zum Encounter
+   gehoeren, sondern von Encounter zu Encounter mitlaufen (NPC, Helden). */
+.begleiter-zone {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
+  gap: 18px 8px;
+  border: 2px dashed var(--rand-hell);
+  border-radius: 16px;
+  padding: 6px 8px 16px;
+  margin-top: 6px;
+}
+.begleiter-titel {
+  grid-column: 1 / -1;
+  padding: 6px 4px 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+/* Solange es keine Begleiter gibt, ist die Zone nur ein schmaler Knopf. */
+.begleiter-anlegen {
+  grid-column: 1 / -1;
+  border: 0;
+  background: transparent;
+  border-radius: 12px;
+  padding: 12px 8px;
+  text-align: center;
+  color: var(--text-2);
+  font-size: 14px;
+}
+.begleiter-anlegen b { color: var(--gruen-hell); font-weight: 700; }
+.begleiter-anlegen:active { background: rgba(63, 174, 99, .08); }
+/* Begleiter-Karten heben sich gruen ab; beim Tippen gewinnt weiter das Gelb. */
+.karte.begleiter:not(.aktiv) { border-color: rgba(87, 209, 126, .38); }
+
+/* Max-HP und AC nebeneinander im Begleiter-Menue */
+.begleiter-werte { display: flex; gap: 10px; }
+.begleiter-werte .ini-eingabe { flex: 1 1 50%; }
+
 @media (max-width: 420px) {
   #feld { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .begleiter-zone { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
   #titel .szene { display: none; }
   #summe { display: none; }
 }

@@ -29,7 +29,8 @@ window.Initiative = (function () {
     return alle[id];
   }
 
-  // Ein Eintrag ist "g:<uid>" für einen Gegner oder "s:<0-2>" für einen Platz
+  // Ein Eintrag ist "g:<uid>" für einen Gegner, "s:<0-2>" für einen Platz
+  // oder "b:<uid>" für einen Begleiter (läuft über alle Encounter mit).
   function loese(schluessel) {
     if (schluessel.charAt(0) === 's') {
       const i = +schluessel.slice(2);
@@ -37,6 +38,11 @@ window.Initiative = (function () {
       if (!s) return null;
       return { art: 'spieler', name: s.name, blass: !s.benannt,
                stufe: '', nr: 0, hex: s.hex, tot: false };
+    }
+    if (schluessel.charAt(0) === 'b') {
+      const b = (A.begleiter ? A.begleiter() : []).find(x => x.uid === schluessel.slice(2));
+      if (!b) return null;
+      return { art: 'begleiter', name: b.name, stufe: '', nr: 0, hex: b.hex, tot: b.tot };
     }
     const g = A.gegner().find(x => x.uid === schluessel.slice(2));
     if (!g) return null;
@@ -140,10 +146,11 @@ window.Initiative = (function () {
     return s;
   }
 
-  // Spiegelt das Plättchen des Kastens: Farbe plus Laufnummer
+  // Spiegelt das Plättchen des Kastens: Farbe plus Laufnummer.
+  // Spieler und Begleiter stehen auf Aufstellern - gleicher runder Look.
   function punkt(e) {
     const s = document.createElement('span');
-    s.className = 'ini-punkt' + (e.art === 'spieler' ? ' spieler' : '');
+    s.className = 'ini-punkt' + (e.art !== 'gegner' ? ' spieler' : '');
     if (e.hex) {
       s.style.background = e.hex;
       s.style.borderColor = 'rgba(255,255,255,.55)';
@@ -158,11 +165,11 @@ window.Initiative = (function () {
      gerade kein Kampf, passiert nichts - dann stellt man ohnehin neu auf.
      Verschieben geht danach in der Aufstellung. */
 
-  function anhaengen(uid) {
+  function anhaengen(uid, art) {
     if (!A) return;
     const d = daten();
     if (!d.folge.length) return;
-    const schluessel = 'g:' + uid;
+    const schluessel = (art || 'g') + ':' + uid;
     if (d.folge.indexOf(schluessel) >= 0) return;
     d.folge.push(schluessel);
     A.speichern();
@@ -221,6 +228,14 @@ window.Initiative = (function () {
       art: 'spieler', name: s.name, stufe: '', nr: 0,
       hex: s.hex, tot: false, blass: !s.benannt
     })));
+
+    const begleiter = A.begleiter ? A.begleiter() : [];
+    if (begleiter.length) {
+      spalte.appendChild(A.sheet.gruppe('Begleiter'));
+      begleiter.forEach(b => spalte.appendChild(wahlzeile('b:' + b.uid, {
+        art: 'begleiter', name: b.name, stufe: '', nr: 0, hex: b.hex, tot: b.tot
+      })));
+    }
   }
 
   function leerzeile(text) {

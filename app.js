@@ -81,6 +81,8 @@ function ladeState() {
     delete s.tag;
   });
   if (!state.initiative) state.initiative = {};
+  // Begleiter: Kaesten, die nicht zum Encounter gehoeren, sondern mitlaufen
+  if (!Array.isArray(state.begleiter)) state.begleiter = [];
   if (!state.stufen) {
     state.stufen = {};
     (PALETTE.gruppen || []).forEach(g => { state.stufen[g.id] = g.standard || null; });
@@ -97,7 +99,9 @@ function board() {
   if (!state.boards[id]) state.boards[id] = baueBoard(enc());
   return state.boards[id];
 }
-function finde(uid) { return board().find(i => i.uid === uid); }
+function finde(uid) {
+  return board().find(i => i.uid === uid) || state.begleiter.find(b => b.uid === uid) || null;
+}
 
 function baueBoard(e) {
   const arr = [];
@@ -208,6 +212,7 @@ function zeichne() {
 
   boardMitNummern().forEach(e => feld.appendChild(baueKarte(e.inst, e.nr)));
   feld.appendChild(plusKachel());
+  feld.appendChild(begleiterZone());
 
   summe();
   if (window.Initiative) Initiative.zeichne();
@@ -223,10 +228,10 @@ function plusKachel() {
   return b;
 }
 
-function baueKarte(inst, nr) {
-  const kr = KMAP[inst.ref] || { name: inst.ref, kurz: inst.ref, stufen: [] };
-  const st = stufeVon(inst);
-
+// Gemeinsamer Rumpf von Gegner- und Begleiter-Kasten: DOM, Tippflaechen,
+// TOT-Knopf, Registrierung in der karten-Map. Beschriftung und Menue
+// haengt der jeweilige Aufrufer an.
+function baueRumpf(inst) {
   const karte = document.createElement('div');
   karte.className = 'karte' + (inst.spaeter ? ' spaeter' : '');
 
@@ -269,17 +274,6 @@ function baueKarte(inst, nr) {
   };
   karten.set(inst.uid, ref);
 
-  // Beschriftung. Die Laufnummer steht im Plättchen, nicht im Namen - im Namen
-  // wuerde sie als Erstes abgeschnitten, und sie ist das Wichtigste am Kasten.
-  ref.nr = nr;
-  q('.name').textContent = kr.kurz || kr.name;
-  const kurzStufe = st && st.kurz ? st.kurz : '';
-  q('.unter').innerHTML = (kurzStufe ? '<span class="stufe">' + esc(kurzStufe) + '</span> · ' : '') +
-    'AC ' + inst.ac;
-
-  // Auf dem Kasten steht bewusst nur die Lebenszahl. Notiz und "kommt später"
-  // stehen im Plättchen-Menü; auf dem Feld reicht der gestrichelte Rand.
-
   // Tippflächen
   q('.zone.plus').addEventListener('pointerdown',  (ev) => runter(ev, inst, +1));
   q('.zone.minus').addEventListener('pointerdown', (ev) => runter(ev, inst, -1));
@@ -289,8 +283,6 @@ function baueKarte(inst, nr) {
     z.addEventListener('pointercancel', abbruch);
   });
 
-  // Knöpfe
-  ref.tag.onclick = () => kartenMenue(inst);
   q('.totknopf').onclick = () => {
     uebernehmen();
     inst.tot = !inst.tot;
@@ -300,10 +292,30 @@ function baueKarte(inst, nr) {
     if (window.Initiative) Initiative.zeichne();
   };
 
-  faerbePunkt(ref.tag, inst.stift, nr);
-  faerbeNodge(ref.nodge, standVonInstanz(inst));
+  return { kasten: kasten, karte: karte, q: q, ref: ref };
+}
+
+function baueKarte(inst, nr) {
+  const kr = KMAP[inst.ref] || { name: inst.ref, kurz: inst.ref, stufen: [] };
+  const st = stufeVon(inst);
+  const r = baueRumpf(inst);
+
+  // Beschriftung. Die Laufnummer steht im Plättchen, nicht im Namen - im Namen
+  // wuerde sie als Erstes abgeschnitten, und sie ist das Wichtigste am Kasten.
+  r.ref.nr = nr;
+  r.q('.name').textContent = kr.kurz || kr.name;
+  const kurzStufe = st && st.kurz ? st.kurz : '';
+  r.q('.unter').innerHTML = (kurzStufe ? '<span class="stufe">' + esc(kurzStufe) + '</span> · ' : '') +
+    'AC ' + inst.ac;
+
+  // Auf dem Kasten steht bewusst nur die Lebenszahl. Notiz und "kommt später"
+  // stehen im Plättchen-Menü; auf dem Feld reicht der gestrichelte Rand.
+
+  r.ref.tag.onclick = () => kartenMenue(inst);
+  faerbePunkt(r.ref.tag, inst.stift, nr);
+  faerbeNodge(r.ref.nodge, standVonInstanz(inst));
   malen(inst.uid);
-  return kasten;
+  return r.kasten;
 }
 
 // Der Punkt oben: die Stiftfarbe, die du aufs Schildchen malst.
@@ -483,6 +495,17 @@ function gruppe(text) {
   d.textContent = text;
   return d;
 }
+function eingabe(box, platzhalter, typ, wert) {
+  const f = document.createElement('input');
+  f.className = 'ini-eingabe';
+  f.type = typ;
+  if (typ === 'number') f.inputMode = 'numeric';
+  f.placeholder = platzhalter;
+  f.value = wert == null ? '' : wert;
+  f.autocomplete = 'off';
+  box.appendChild(f);
+  return f;
+}
 
 /* ─── Menü einer Karte ─── */
 
@@ -625,6 +648,187 @@ function lege(kr, st) {
   if (ref) ref.karte.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
+/* ─── Begleiter: Kaesten, die von Encounter zu Encounter mitlaufen ───
+   Fuer den NPC an der Seite der Gruppe oder (optional) die Helden.
+   Eigener, klar abgesetzter Rahmen unter den Gegnern; die HP bleiben
+   beim Blaettern stehen, weil die Kaesten nicht am Board haengen. */
+
+function begleiterUnter(b) {
+  return 'Begleiter' + (b.ac ? ' · AC ' + b.ac : '');
+}
+
+function begleiterZone() {
+  const zone = document.createElement('div');
+  zone.className = 'begleiter-zone';
+
+  if (!state.begleiter.length) {
+    const knopf = document.createElement('button');
+    knopf.className = 'begleiter-anlegen';
+    knopf.innerHTML = '+ <b>Begleiter</b> — NPC oder Held, läuft durch alle Encounter mit';
+    knopf.onclick = begleiterHinzufuegen;
+    zone.appendChild(knopf);
+    return zone;
+  }
+
+  const titel = document.createElement('div');
+  titel.className = 'begleiter-titel';
+  titel.textContent = 'Begleiter — laufen von Encounter zu Encounter mit';
+  zone.appendChild(titel);
+
+  state.begleiter.forEach(b => zone.appendChild(baueBegleiterKarte(b)));
+
+  const plus = document.createElement('button');
+  plus.className = 'plus-kachel';
+  plus.setAttribute('aria-label', 'Begleiter hinzufügen');
+  plus.textContent = '+';
+  plus.onclick = begleiterHinzufuegen;
+  zone.appendChild(plus);
+  return zone;
+}
+
+function baueBegleiterKarte(b) {
+  const r = baueRumpf(b);
+  r.karte.classList.add('begleiter');
+  r.ref.nr = 0;
+  r.q('.name').textContent = b.name || 'Begleiter';
+  r.q('.unter').textContent = begleiterUnter(b);
+  r.ref.tag.onclick = () => begleiterMenue(b);
+  faerbePunkt(r.ref.tag, null, 0);
+  faerbeNodge(r.ref.nodge, b.stand);
+  malen(b.uid);
+  return r.kasten;
+}
+
+// Wer belegt diesen Aufsteller schon? Spieler, Gegner-Gruppe oder anderer Begleiter.
+function begleiterStandBelegt(standId, ausserUid) {
+  for (let i = 0; i < state.spieler.length; i++) {
+    if (state.spieler[i].stand === standId) {
+      return state.spieler[i].name || ('Spieler ' + (i + 1));
+    }
+  }
+  const gruppen = window.Farben ? Farben.gruppen() : [];
+  for (const g of gruppen) {
+    if (state.stufen[g.id] === standId) return g.name;
+  }
+  for (const b of state.begleiter) {
+    if (b.uid !== ausserUid && b.stand === standId) return b.name || 'Begleiter';
+  }
+  return null;
+}
+
+function begleiterMenue(b) {
+  sheetAuf(b.name || 'Begleiter', (box) => {
+
+    box.appendChild(gruppe('Name'));
+    const nameFeld = eingabe(box, 'Name', 'text', b.name);
+    nameFeld.oninput = () => {
+      b.name = nameFeld.value.trim();
+      speichern();
+      const ref = karten.get(b.uid);
+      if (ref) ref.karte.querySelector('.name').textContent = b.name || 'Begleiter';
+      if (window.Initiative) Initiative.zeichne();
+    };
+
+    box.appendChild(gruppe('Aufsteller (Nodge unten)'));
+    const reihe = document.createElement('div');
+    reihe.className = 'fb-staender';
+    const setzen = (id) => {
+      b.stand = id;
+      speichern();
+      const ref = karten.get(b.uid);
+      if (ref) faerbeNodge(ref.nodge, id);
+      if (window.Initiative) Initiative.zeichne();
+      begleiterMenue(b);   // Auswahlmarken auffrischen
+    };
+    const keine = document.createElement('button');
+    keine.className = 'fb-stand keiner' + (b.stand ? '' : ' gewaehlt');
+    keine.textContent = '✕';
+    keine.onclick = () => setzen(null);
+    reihe.appendChild(keine);
+    (window.Farben ? Farben.aufstellerListe() : []).forEach(f => {
+      const belegt = begleiterStandBelegt(f.id, b.uid);
+      const k = document.createElement('button');
+      k.className = 'fb-stand' + (b.stand === f.id ? ' gewaehlt' : '') + (belegt ? ' belegt' : '');
+      k.style.background = f.hex;
+      k.title = belegt ? f.name + ' — belegt von ' + belegt : f.name;
+      k.setAttribute('aria-label', k.title);
+      if (belegt) k.disabled = true;
+      else k.onclick = () => setzen(f.id);
+      reihe.appendChild(k);
+    });
+    box.appendChild(reihe);
+
+    box.appendChild(gruppe('Max-HP · AC'));
+    const werte = document.createElement('div');
+    werte.className = 'begleiter-werte';
+    const maxFeld = eingabe(werte, 'Max-HP', 'number', b.max);
+    maxFeld.onchange = () => {
+      const neu = clamp(parseInt(maxFeld.value, 10) || b.max, 1, 999);
+      maxFeld.value = neu;
+      b.max = neu;
+      b.hp = clamp(b.hp, 0, neu);
+      speichern(); malen(b.uid);
+    };
+    const acFeld = eingabe(werte, 'AC (leer = ohne)', 'number', b.ac);
+    acFeld.onchange = () => {
+      b.ac = parseInt(acFeld.value, 10) || null;
+      speichern();
+      const ref = karten.get(b.uid);
+      if (ref) ref.karte.querySelector('.unter').textContent = begleiterUnter(b);
+    };
+    box.appendChild(werte);
+
+    box.appendChild(gruppe('Kasten'));
+    box.appendChild(zeile('HP auf ' + b.max + ' auffüllen', null, () => {
+      b.hp = b.max; b.tot = false;
+      speichern(); sheetZu(); malen(b.uid);
+      if (window.Initiative) Initiative.zeichne();
+    }));
+    box.appendChild(zeile('Begleiter entfernen', 'Verschwindet auch aus jeder Initiative.', () => {
+      state.begleiter.splice(state.begleiter.indexOf(b), 1);
+      speichern(); sheetZu(); zeichne();
+    }, 'warn'));
+  });
+}
+
+function begleiterHinzufuegen() {
+  sheetAuf('Begleiter anlegen', (box) => {
+    const merk = document.createElement('div');
+    merk.className = 'merk';
+    merk.textContent = 'Ein Kasten, der in jedem Encounter stehen bleibt — der NPC an eurer ' +
+      'Seite oder ein Held. Seine HP laufen über den ganzen Abend durch.';
+    box.appendChild(merk);
+
+    const nameFeld = eingabe(box, 'Name (z. B. Der Geweihte)', 'text', '');
+    const hpFeld   = eingabe(box, 'Max-HP', 'number', '');
+    const acFeld   = eingabe(box, 'AC (optional)', 'number', '');
+
+    const los = document.createElement('button');
+    los.className = 'fb-dazu';
+    los.textContent = 'Anlegen';
+    los.onclick = () => {
+      const max = parseInt(hpFeld.value, 10);
+      if (!max || max < 1) { hpFeld.focus(); return; }
+      const b = {
+        uid:   'b' + (state.seq++),
+        name:  nameFeld.value.trim(),
+        hp:    clamp(max, 1, 999),
+        max:   clamp(max, 1, 999),
+        ac:    parseInt(acFeld.value, 10) || null,
+        stand: null,
+        tot:   false
+      };
+      state.begleiter.push(b);
+      speichern();
+      // Laeuft gerade ein Kampf, reiht er sich hinten ein
+      if (window.Initiative) Initiative.anhaengen(b.uid, 'b');
+      sheetZu();
+      zeichne();
+    };
+    box.appendChild(los);
+  });
+}
+
 /* ─── Encounter zurücksetzen ─── */
 
 function encounterZuruecksetzen() {
@@ -706,6 +910,13 @@ function initiativeAnbinden() {
                   name: s.name || ('Spieler ' + (i + 1)),
                   benannt: !!s.name,
                   hex: window.Farben ? Farben.aufstellerHex(s.stand) : null
+                })),
+    // Begleiter stehen wie Charaktere auf Aufstellern, laufen aber ueber alle Encounter
+    begleiter:  () => state.begleiter.map(b => ({
+                  uid:  b.uid,
+                  name: b.name || 'Begleiter',
+                  hex:  window.Farben ? Farben.aufstellerHex(b.stand) : null,
+                  tot:  !!b.tot || b.hp <= 0
                 })),
     initiative: () => state.initiative,
     speichern:  speichern,
