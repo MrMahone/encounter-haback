@@ -79,7 +79,10 @@
   align-items: center;
   gap: 2px;
 }
-.ini-runde button {
+/* Die ‹ › verstecken sich hinter der Zahl: erst ein Tipp darauf holt sie
+   hervor - so verstellt man die Runde nicht aus Versehen. */
+#runde-ab, #runde-auf {
+  display: none;
   width: 36px; height: 54px;
   border-radius: 10px;
   font-size: 26px;
@@ -87,7 +90,10 @@
   color: var(--text-2);
   background: var(--karte-2);
 }
-.ini-runde button:active { background: var(--rand); color: var(--text); }
+.ini-runde.offen #runde-ab, .ini-runde.offen #runde-auf { display: block; }
+#runde-ab:active, #runde-auf:active { background: var(--rand); color: var(--text); }
+.ini-runde.offen .ini-runde-zahl { background: var(--karte-2); }
+button.ini-runde-zahl { height: 54px; border-radius: 10px; padding: 0 4px; }
 .ini-runde-zahl {
   min-width: 46px;
   text-align: center;

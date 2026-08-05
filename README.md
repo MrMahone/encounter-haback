@@ -87,7 +87,7 @@ rechts die Zug-Knöpfe und der Rundenzähler.
 | **Kampf starten** | die Reihenfolge steht in der Fußleiste |
 | unten einen antippen | der ist dran. Alle anderen werden wieder kompakt |
 | **‹ Zug ›** | einen Zug vor oder zurück — läuft „vor" über das Ende, zählt die Runde hoch; „zurück" über den Anfang nimmt sie wieder weg |
-| **‹ Runde ›** ganz rechts | Rundenzähler von Hand (1–99, pro Encounter gemerkt) |
+| **Runde** ganz rechts antippen | holt die ‹ ›-Knöpfe hervor, um die Runde von Hand zu stellen (1–99, pro Encounter gemerkt) |
 
 In der Fußleiste ist immer genau einer **aktiv** (breit, mit Position und Namen), der
 **nächste** wird angeteasert, alle übrigen stehen kompakt daneben. Passen nicht alle

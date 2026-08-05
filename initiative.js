@@ -505,6 +505,7 @@ window.Initiative = (function () {
     w('ini', aufstellen);
     w('zug-zurueck', () => zug(-1));
     w('zug-vor', () => zug(+1));
+    w('runde-zeig', () => document.getElementById('ini-runde').classList.toggle('offen'));
     w('runde-ab', () => runde(-1));
     w('runde-auf', () => runde(+1));
     zeichne();

@@ -496,17 +496,16 @@ button {
   color: var(--text-2);
 }
 /* Solange es keine Begleiter gibt, ist die Zone nur ein schmaler Knopf. */
+/* Traegt keinen Text - der gestrichelte Rahmen der Zone reicht als Hinweis,
+   min-height haelt die leere Flaeche antippbar. */
 .begleiter-anlegen {
   grid-column: 1 / -1;
   border: 0;
   background: transparent;
   border-radius: 12px;
+  min-height: 38px;
   padding: 12px 8px;
-  text-align: center;
-  color: var(--text-2);
-  font-size: 14px;
 }
-.begleiter-anlegen b { color: var(--gruen-hell); font-weight: 700; }
 .begleiter-anlegen:active { background: rgba(63, 174, 99, .08); }
 /* Begleiter-Karten heben sich gruen ab; beim Tippen gewinnt weiter das Gelb. */
 .karte.begleiter:not(.aktiv) { border-color: rgba(87, 209, 126, .38); }

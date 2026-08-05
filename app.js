@@ -498,8 +498,9 @@ function summe() {
   const rest = b.reduce((s, i) => s + (i.tot ? 0 : i.hp), 0);
   const ganz = b.reduce((s, i) => s + i.max, 0);
   const lebend = b.filter(i => !i.tot && i.hp > 0).length;
+  const prozent = ganz ? Math.round(rest / ganz * 100) : 0;
   $('summe').innerHTML = ganz
-    ? '<b>' + rest + '</b>&nbsp;/&nbsp;' + ganz + ' HP&nbsp;&nbsp;·&nbsp;&nbsp;' + lebend + ' auf dem Feld'
+    ? '<b>' + rest + '</b>&nbsp;/&nbsp;' + ganz + ' HP&nbsp;(' + prozent + '%)&nbsp;&nbsp;·&nbsp;&nbsp;' + lebend + ' auf dem Feld'
     : '';
 }
 
@@ -727,9 +728,10 @@ function begleiterZone() {
   zone.className = 'begleiter-zone';
 
   if (!state.begleiter.length) {
+    // Ohne Text: der gestrichelte Rahmen genuegt, antippen legt an.
     const knopf = document.createElement('button');
     knopf.className = 'begleiter-anlegen';
-    knopf.innerHTML = '+ <b>Begleiter</b> — NPC oder Held, läuft durch alle Encounter mit';
+    knopf.setAttribute('aria-label', 'Begleiter anlegen — läuft durch alle Encounter mit');
     knopf.onclick = begleiterHinzufuegen;
     zone.appendChild(knopf);
     return zone;

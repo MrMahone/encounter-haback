@@ -2,7 +2,7 @@
 
 // Name bei jeder Aenderung an den Dateien hochzaehlen - das ist das Signal,
 // an dem der Browser merkt, dass es eine neue Fassung gibt.
-const CACHE = 'ln-hp-v16';
+const CACHE = 'ln-hp-v17';
 
 const SHELL = [
   './',
