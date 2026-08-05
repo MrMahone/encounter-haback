@@ -483,6 +483,16 @@ function malen(uid) {
   ref.bar.className = anteil > 0.5 ? '' : anteil > 0.25 ? 'mittel' : 'tief';
 }
 
+// Wessen Zug es laut Initiative ist, dessen Karte traegt den gelben Ring.
+// Spieler-Plaetze haben keine Karte - dann traegt ihn niemand.
+let zugUid = null;
+function zugAuf(uid, scrollen) {
+  zugUid = uid || null;
+  karten.forEach((ref, k) => ref.karte.classList.toggle('dran', k === zugUid));
+  const ref = zugUid ? karten.get(zugUid) : null;
+  if (scrollen && ref) ref.karte.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
 function summe() {
   const b = board();
   const rest = b.reduce((s, i) => s + (i.tot ? 0 : i.hp), 0);
@@ -975,6 +985,7 @@ function initiativeAnbinden() {
                 })),
     initiative: () => state.initiative,
     speichern:  speichern,
+    zugAuf:     zugAuf,
     istHell:    (hex) => window.Farben ? Farben.istHell(hex) : false,
     sheet:      { auf: sheetAuf, zu: sheetZu, zeile: zeile, gruppe: gruppe }
   });

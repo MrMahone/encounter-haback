@@ -203,6 +203,8 @@ button {
 .karte.tot { opacity: .34; }
 .karte.tot .name { text-decoration: line-through; }
 .karte.aktiv { border-color: var(--gelb); }
+/* dran = am Zug laut Initiative; aktiv (schwebende Eingabe) bleibt getrennt */
+.karte.dran { box-shadow: 0 0 0 2px var(--gelb); }
 
 /* Kopf */
 .kopf {

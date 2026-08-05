@@ -74,7 +74,7 @@ schmale Schnittstelle am HP-Zähler und kennt von ihm nur, welche Gegner auf dem
 stehen — keine Kästen, keinen Tipp-Zähler.
 
 Die Fußleiste ist **immer da**: links die zwei Knöpfe, in der Mitte die Reihenfolge,
-rechts der Rundenzähler.
+rechts die Zug-Knöpfe und der Rundenzähler.
 
 | Geste | Wirkung |
 |---|---|
@@ -86,13 +86,15 @@ rechts der Rundenzähler.
 | **✕** an der Zeile | nimmt ihn raus |
 | **Kampf starten** | die Reihenfolge steht in der Fußleiste |
 | unten einen antippen | der ist dran. Alle anderen werden wieder kompakt |
-| **‹ ›** ganz rechts | Rundenzähler, rein manuell (1–99, pro Encounter gemerkt) |
+| **‹ Zug ›** | einen Zug vor oder zurück — läuft „vor" über das Ende, zählt die Runde hoch; „zurück" über den Anfang nimmt sie wieder weg |
+| **‹ Runde ›** ganz rechts | Rundenzähler von Hand (1–99, pro Encounter gemerkt) |
 
 In der Fußleiste ist immer genau einer **aktiv** (breit, mit Position und Namen), der
 **nächste** wird angeteasert, alle übrigen stehen kompakt daneben. Passen nicht alle
 gleichzeitig hin, wandert die Leiste beim Weiterklicken mit — der Aktive und der Nächste
-sind immer im Bild und werden nie abgeschnitten. Nach dem Letzten tippt man wieder vorne
-an; es gibt keine Weiter-Knöpfe, weil alles über Antippen geht.
+sind immer im Bild und werden nie abgeschnitten. Weiter geht es über den **Zug-vor-Knopf**
+oder direktes Antippen — Antippen ist ein reiner Sprung und zählt die Runde nie. Die Karte
+dessen, der dran ist, trägt im Feld einen gelben Ring (Charaktere haben keine Karte).
 
 Das Verschieben läuft über Zeigerereignisse, nicht über HTML5-Drag-and-Drop — das gibt es
 auf dem iPad nicht. Am unteren und oberen Rand des Popups scrollt die Liste beim Ziehen

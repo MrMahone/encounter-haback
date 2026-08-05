@@ -5,8 +5,8 @@
    localStorage. Umgekehrt weiß der HP-Zähler von hier nur zeichne().
 
    Die Fußleiste ist immer da: links die zwei Knöpfe, in der Mitte die
-   Reihenfolge, rechts der Rundenzähler. Alles von Hand - es passiert
-   nichts von allein. */
+   Reihenfolge, rechts Zug-Knöpfe und Rundenzähler. Fast alles von Hand -
+   nur wenn "Zug vor" über das Ende läuft, zählt die Runde selbst hoch. */
 
 'use strict';
 
@@ -69,14 +69,8 @@ window.Initiative = (function () {
     leiste.innerHTML = '';
     document.getElementById('runde-zahl').textContent = d.runde;
 
-    // Wer tot ist, fliegt aus der Leiste. Nicht aus der gespeicherten
-    // Reihenfolge - wird die Flagge zurueckgenommen, steht er wieder da,
-    // wo er war.
-    const sichtbar = [];
-    d.folge.forEach((schluessel, i) => {
-      const e = loese(schluessel);
-      if (e && !e.tot) sichtbar.push({ schluessel: schluessel, i: i, e: e });
-    });
+    const sichtbar = sichtbare(d);
+    schalteZug(!sichtbar.length);
 
     if (!sichtbar.length) {
       const hinweis = document.createElement('button');
@@ -86,6 +80,7 @@ window.Initiative = (function () {
         : 'Keine Initiative — hier tippen zum Aufstellen';
       hinweis.onclick = aufstellen;
       leiste.appendChild(hinweis);
+      if (A.zugAuf) A.zugAuf(null);
       return;
     }
 
@@ -124,6 +119,54 @@ window.Initiative = (function () {
     });
 
     if (aktivChip) insBild(leiste, aktivChip);
+    if (A.zugAuf) A.zugAuf(aktivUid(d));
+  }
+
+  // Wer tot ist, fliegt aus der Leiste. Nicht aus der gespeicherten
+  // Reihenfolge - wird die Flagge zurueckgenommen, steht er wieder da,
+  // wo er war.
+  function sichtbare(d) {
+    const sichtbar = [];
+    d.folge.forEach((schluessel, i) => {
+      const e = loese(schluessel);
+      if (e && !e.tot) sichtbar.push({ schluessel: schluessel, i: i, e: e });
+    });
+    return sichtbar;
+  }
+
+  // Spieler haben keine Karte auf dem Feld - dann gibt es nichts hervorzuheben.
+  function aktivUid(d) {
+    const s = d.folge[d.aktiv];
+    return s && s.charAt(0) !== 's' ? s.slice(2) : null;
+  }
+
+  function schalteZug(aus) {
+    ['zug-zurueck', 'zug-vor'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.disabled = aus;
+    });
+  }
+
+  /* ── Zugwechsel ──
+     Läuft "vor" über das Ende hinaus, beginnt eine neue Runde; "zurück"
+     über den Anfang nimmt sie wieder weg. Chips antippen bleibt ein
+     reiner Sprung und zählt nie. */
+
+  function zug(richtung) {
+    const d = saubereFolge();
+    const sichtbar = sichtbare(d);
+    if (!sichtbar.length) return;
+
+    let pos = sichtbar.findIndex(x => x.i === d.aktiv);
+    if (pos < 0) pos = 0;
+    const neu = (pos + richtung + sichtbar.length) % sichtbar.length;
+    if (richtung > 0 && neu <= pos) d.runde = klemm(d.runde + 1, 1, 99);
+    if (richtung < 0 && neu >= pos) d.runde = klemm(d.runde - 1, 1, 99);
+
+    d.aktiv = sichtbar[neu].i;
+    A.speichern();
+    zeichne();
+    if (A.zugAuf) A.zugAuf(aktivUid(d), true);
   }
 
   // Passen nicht alle in die Leiste, wandert sie mit - der Aktive ist immer
@@ -176,7 +219,7 @@ window.Initiative = (function () {
     zeichne();
   }
 
-  /* ── Rundenzähler: rein manuell ── */
+  /* ── Rundenzähler: die Knöpfe bleiben rein manuell ── */
 
   function runde(d) {
     const z = daten();
@@ -460,6 +503,8 @@ window.Initiative = (function () {
     A = api;
     const w = (id, tun) => { const el = document.getElementById(id); if (el) el.onclick = tun; };
     w('ini', aufstellen);
+    w('zug-zurueck', () => zug(-1));
+    w('zug-vor', () => zug(+1));
     w('runde-ab', () => runde(-1));
     w('runde-auf', () => runde(+1));
     zeichne();

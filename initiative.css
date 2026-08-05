@@ -49,6 +49,28 @@
 }
 .ini-hinweis:active { background: var(--karte-2); }
 
+/* ─── Zug vor / zurück ──────────────────────── */
+
+.ini-zug {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.ini-zug button {
+  width: 36px; height: 54px;
+  border-radius: 10px;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--text-2);
+  background: var(--karte-2);
+}
+/* "Vor" ist der Griff, der am Abend hundertmal fällt - einen Tick heller */
+#zug-vor { color: var(--text); }
+.ini-zug button:active { background: var(--rand); color: var(--text); }
+.ini-zug button:disabled { opacity: .25; }
+.ini-zug .ini-runde-zahl { min-width: 28px; }
+
 /* ─── Rundenzähler ──────────────────────────── */
 
 .ini-runde {
